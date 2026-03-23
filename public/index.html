@@ -84,19 +84,6 @@
   <div id="mb-zoom-in" class="mbtn">+</div>
   <div id="mb-zoom-out" class="mbtn">−</div>
 </div>
-<!-- Mobile Controls -->
-<div id="mob" style="display:none;position:fixed;z-index:20">
-  <div id="mj" style="position:fixed;bottom:100px;left:30px;width:120px;height:120px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.2);border-radius:50%">
-    <div id="mjk" style="width:44px;height:44px;background:rgba(255,255,255,.35);border-radius:50%;position:absolute;top:38px;left:38px"></div></div>
-  <button id="mfire" style="position:fixed;bottom:110px;right:30px;width:70px;height:70px;background:rgba(231,76,60,.5);border:2px solid rgba(231,76,60,.6);border-radius:50%;color:#fff;font-size:22px;font-weight:bold">🔥</button>
-  <button class="mbtn" onclick="send({t:'setSails',v:0})" style="position:fixed;bottom:200px;right:30px">⚓</button>
-  <button class="mbtn" onclick="send({t:'setSails',v:1})" style="position:fixed;bottom:200px;right:85px">⛵</button>
-  <button class="mbtn" onclick="send({t:'setSails',v:2})" style="position:fixed;bottom:200px;right:140px">🚀</button>
-  <button class="mbtn" onclick="keys.KeyE=true;setTimeout(()=>keys.KeyE=false,200)" style="position:fixed;bottom:30px;right:120px">E</button>
-  <button class="mbtn" onclick="togglePanel()" style="position:fixed;bottom:30px;right:30px">B</button>
-  <button class="mbtn" onclick="send({t:'mine'})" style="position:fixed;bottom:30px;right:210px">⛏</button>
-  <button class="mbtn" onclick="send({t:'deposit'})" style="position:fixed;bottom:30px;right:270px">📦</button>
-</div>
 <div id="panel"><div id="panel-box"><h2 id="ptitle">Menu</h2><div id="pgold"></div>
 <div class="tabs"><div class="tab active" data-tab="ships">Ships</div><div class="tab" data-tab="trade">Trade</div><div class="tab" data-tab="craft">Craft</div><div class="tab" data-tab="smuggle">Smuggle</div><div class="tab" data-tab="housing">Housing</div><div class="tab" data-tab="market">Market</div><div class="tab" data-tab="skills">Skills</div></div>
 <div id="tab-content"></div><div id="pmsg"></div><button id="pclose">Close [B]</button></div></div>
@@ -132,10 +119,10 @@ let myId=null,MAP=6000,ISL=[],MISL=[],SAFE=null,HIDDEN=null,ALL=[],ROCKS=[],SD={
 let RECIPES={},ILLEGALS={};
 let water,aimRing,dots=[];let ents={},cbPool=[];
 let keys={},mX=0,mY=0,mW={x:0,z:0};
-let playing=false,panelOpen=false,pTab='ships',freeLook=false,flY=0,flP=0;
+let playing=false,panelOpen=false,pTab='ships',freeLook=false;
 let myGold=5000,myOwned=['rowboat'],myShip='rowboat',nearIdx=-1;
 let mktList=[],hSlots=[],hStore={};
-let camZoom=1.0; // 0.5=close, 2.0=far
+let camYaw=0,camPitch=0.3,camZoom=1.0; // independent camera orbit
 let critters=[]; // {mesh,x,z,island,vx,vz,alive,respawnT}
 // Sound
 let sndCtx,sndWaves,sndBoom,sndLoaded=false;
@@ -201,7 +188,7 @@ function initThree(){
     if(e.code==='Digit1')send({t:'setSails',v:0});if(e.code==='Digit2')send({t:'setSails',v:1});if(e.code==='Digit3')send({t:'setSails',v:2});
     if(e.code==='KeyB')togglePanel();if(e.code==='KeyF')send({t:'mine'});if(e.code==='KeyG')send({t:'deposit'});if(e.code==='Space')e.preventDefault()});
   window.addEventListener('keyup',e=>{keys[e.code]=false});window.addEventListener('blur',()=>{keys={};freeLook=false});
-  window.addEventListener('mousemove',e=>{mX=e.clientX;mY=e.clientY;if(freeLook&&!panelOpen){flY-=e.movementX*.003;flP=Math.max(-.4,Math.min(.5,flP-e.movementY*.003))}});
+  window.addEventListener('mousemove',e=>{mX=e.clientX;mY=e.clientY;if(freeLook&&!panelOpen){camYaw-=e.movementX*.003;camPitch=Math.max(0.05,Math.min(0.8,camPitch+e.movementY*.003))}});
   window._lft=window._lft||0;
   window.addEventListener('mousedown',e=>{if(e.button===0&&!panelOpen&&playing){
     const GS=getIS();const me=GS?.p[myId];
@@ -210,7 +197,7 @@ function initThree(){
       if(Date.now()-window._lft>=reloadMs){window._lft=Date.now();send({t:'fire'});playBoom()}
     }
   }if(e.button===2){freeLook=true;renderer.domElement.requestPointerLock?.()}});
-  window.addEventListener('mouseup',e=>{if(e.button===2){freeLook=false;document.exitPointerLock?.()}}); // flY,flP persist!
+  window.addEventListener('mouseup',e=>{if(e.button===2){freeLook=false;document.exitPointerLock?.()}});
   window.addEventListener('wheel',e=>{camZoom=Math.max(0.5,Math.min(2.0,camZoom+e.deltaY*0.001));e.preventDefault()},{passive:false});
   renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
   mmC.addEventListener('click',e=>{const r=mmC.getBoundingClientRect();send({t:'tp',x:((e.clientX-r.left)/200-.5)*MAP,z:((e.clientY-r.top)/200-.5)*MAP})});
@@ -472,16 +459,23 @@ function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime()
     m.userData.px=cba[i].x;m.userData.pz=cba[i].z}
   for(let i=cba.length;i<cbPool.length;i++)cbPool[i].visible=false;
   updateGI(GS.gi);
-  if(me&&ents[myId]){const e=ents[myId];let tgt,cd,ch;
+  // ── CAMERA SYSTEM ──
+  if(me&&ents[myId]){const e=ents[myId];
+    let tgt,cd,ch;
     if(me.ob){tgt=e.boat.position;cd=45*camZoom;ch=22*camZoom}
     else{tgt=e.char.position;cd=22*camZoom;ch=14*camZoom}
-    // Camera orbit: right-click drag adjusts flY/flP, otherwise auto-follow behind movement direction
-    if(!freeLook&&me.ob){flY+=(0-flY)*0.03} // slowly reset on boat
-    const cR=(me.ob?e.boat.rotation.y:Math.atan2(mW.x-tgt.x,mW.z-tgt.z)+Math.PI)+flY;
-    const cP=Math.max(-0.2,Math.min(0.5,flP));
-    const cx=tgt.x-Math.sin(cR)*cd;
-    const cz=tgt.z-Math.cos(cR)*cd;
-    const cy=tgt.y+ch+cP*20;
+    // Orbit angle: on boat = behind boat heading + user offset, on land = user-controlled
+    let orbitAngle;
+    if(me.ob){
+      orbitAngle=e.boat.rotation.y+camYaw; // relative to boat heading
+    } else {
+      orbitAngle=camYaw; // absolute world angle on land
+    }
+    const dist=cd;
+    const height=ch*camPitch/0.3; // pitch affects height
+    const cx=tgt.x-Math.sin(orbitAngle)*dist;
+    const cz=tgt.z-Math.cos(orbitAngle)*dist;
+    const cy=Math.max(tgt.y+5,tgt.y+height);
     camera.position.x+=(cx-camera.position.x)*0.08;
     camera.position.z+=(cz-camera.position.z)*0.08;
     camera.position.y+=(cy-camera.position.y)*0.08;
@@ -604,7 +598,10 @@ function initMobile(){
   // Buttons
   const btn=(id,fn)=>{const el=document.getElementById(id);if(el)el.addEventListener('touchstart',e=>{e.preventDefault();fn()},{passive:false})};
   btn('mb-fire',()=>{const GS=getIS();const me=GS?.p[myId];if(me&&me.ob){const sh=SD[me.sh];const r=sh?.reload||1200;if(Date.now()-window._lft>=r){window._lft=Date.now();send({t:'fire'});playBoom()}}});
-  btn('mb-e',()=>{keys.KeyE=true;setTimeout(()=>{keys.KeyE=false},200)});
+  // E button - hold for embark/disembark timer
+  const eBtn=document.getElementById('mb-e');
+  if(eBtn){eBtn.addEventListener('touchstart',e=>{e.preventDefault();keys.KeyE=true},{passive:false});
+    eBtn.addEventListener('touchend',()=>{keys.KeyE=false})}
   btn('mb-b',()=>togglePanel());
   btn('mb-s1',()=>send({t:'setSails',v:0}));
   btn('mb-s2',()=>send({t:'setSails',v:1}));
@@ -620,7 +617,7 @@ function initMobile(){
   renderer.domElement.addEventListener('touchstart',e=>{if(e.touches.length===1){camTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}}},{passive:true});
   renderer.domElement.addEventListener('touchmove',e=>{if(camTouch&&e.touches.length===1){
     const dx=e.touches[0].clientX-camTouch.x,dy=e.touches[0].clientY-camTouch.y;
-    flY-=dx*0.005;flP=Math.max(-.3,Math.min(.6,flP-dy*0.005));
+    camYaw-=dx*0.005;camPitch=Math.max(0.05,Math.min(0.8,camPitch+dy*0.005));
     camTouch={x:e.touches[0].clientX,y:e.touches[0].clientY}}},{passive:true});
   renderer.domElement.addEventListener('touchend',()=>{camTouch=null});
 
