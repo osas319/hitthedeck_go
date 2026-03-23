@@ -103,6 +103,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/objects/Water.js"></script>
 <script>
 // ═══ ADAPTIVE INTERPOLATION ═══
 let stBuf=[],INTERP=100,lastStateT=0,jitter=0;
@@ -191,8 +192,17 @@ function initThree(){
   scene.add(new THREE.AmbientLight(0xffffff,.7));const sun=new THREE.DirectionalLight(0xfff0d0,1.2);sun.position.set(400,800,300);scene.add(sun);
   scene.add(new THREE.HemisphereLight(0x87ceeb,0x4a9a6a,.4));
   const fill=new THREE.DirectionalLight(0xaaccff,.3);fill.position.set(-300,400,-200);scene.add(fill);
-  const waterTex=new THREE.TextureLoader().load('/water.jpg');waterTex.wrapS=waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(80,80);
-  water=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000,50,50),new THREE.MeshPhongMaterial({map:waterTex,transparent:true,opacity:.92,shininess:60,specular:0x2288aa}));
+  const waterGeo=new THREE.PlaneGeometry(12000,12000);
+  water=new THREE.Water(waterGeo,{
+    textureWidth:256,textureHeight:256,
+    waterNormals:new THREE.TextureLoader().load('/waternormals.jpg',tex=>{tex.wrapS=tex.wrapT=THREE.RepeatWrapping}),
+    sunDirection:new THREE.Vector3(0.7,0.8,0.5).normalize(),
+    sunColor:0xfff0d0,
+    waterColor:0x0a4a6a,
+    distortionScale:4,
+    fog:true,
+    alpha:0.9
+  });
   water.rotation.x=-Math.PI/2;scene.add(water);
   loadGLB(); // load 3D ship model
   aimRing=new THREE.Mesh(new THREE.RingGeometry(2,3,16),new THREE.MeshBasicMaterial({color:0xff3333,transparent:true,opacity:.4,side:2}));aimRing.rotation.x=-Math.PI/2;aimRing.position.y=.5;aimRing.visible=false;scene.add(aimRing);
@@ -443,12 +453,8 @@ function getCB(i){while(cbPool.length<=i){
 function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime();const GS=getIS();if(!GS)return;
   if(ws?.readyState===1&&myId&&!panelOpen)send({t:'input',fwd:!!(keys['KeyW']||keys['ArrowUp']),back:!!(keys['KeyS']||keys['ArrowDown']),left:!!(keys['KeyA']||keys['ArrowLeft']),right:!!(keys['KeyD']||keys['ArrowRight']),act:!!keys['KeyE'],jump:!!keys['Space']});
   if(!freeLook){mv2.x=(mX/innerWidth)*2-1;mv2.y=-(mY/innerHeight)*2+1;ray.setFromCamera(mv2,camera);const h=new THREE.Vector3();if(ray.ray.intersectPlane(wP,h)){mW.x=h.x;mW.z=h.z;send({t:'aim',x:h.x,z:h.z})}}
-  // Gentle water
-  const wp=water.geometry.attributes.position;for(let i=0;i<wp.count;i++){const x=wp.getX(i),y=wp.getY(i);
-    wp.setZ(i,Math.sin(x*.005+t*.6)*1.2+Math.sin(y*.007+t*.4)*.9+Math.sin(x*.013+y*.011+t*1.0)*.4+Math.sin(x*.025+t*1.5)*.15)
-  }wp.needsUpdate=true;water.geometry.computeVertexNormals();
-  // Scroll water texture
-  if(water.material.map){water.material.map.offset.x=t*0.005;water.material.map.offset.y=t*0.003}
+  // Water shader update
+  water.material.uniforms['time'].value+=1.0/60.0;
 
   const act=new Set();
   for(const id in GS.p){act.add(id);const p=GS.p[id],e=getEnt(id),me=id===myId;ensBoat(e,p.sh);ensChar(e,me);
