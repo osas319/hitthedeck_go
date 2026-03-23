@@ -61,7 +61,7 @@
 <div id="cargo" class="h"><h4>Cargo</h4><div id="cargo-list"></div></div>
 <div id="death"><h1>SUNK!</h1><p id="dmsg"></p></div>
 <div id="panel"><div id="panel-box"><h2 id="ptitle">Menu</h2><div id="pgold"></div>
-<div class="tabs"><div class="tab active" data-tab="ships">Ships</div><div class="tab" data-tab="trade">Trade</div><div class="tab" data-tab="craft">Craft</div><div class="tab" data-tab="smuggle">Smuggle</div><div class="tab" data-tab="housing">Housing</div><div class="tab" data-tab="market">Market</div></div>
+<div class="tabs"><div class="tab active" data-tab="ships">Ships</div><div class="tab" data-tab="trade">Trade</div><div class="tab" data-tab="craft">Craft</div><div class="tab" data-tab="smuggle">Smuggle</div><div class="tab" data-tab="housing">Housing</div><div class="tab" data-tab="market">Market</div><div class="tab" data-tab="skills">Skills</div></div>
 <div id="tab-content"></div><div id="pmsg"></div><button id="pclose">Close [B]</button></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -257,6 +257,25 @@ function renderTab(){
     const items={...(me?.cargo||{}), ...(me?.inv||{}), ...(me?.ci||{})};for(const[item,qty]of Object.entries(items)){if(qty<=0)continue;
       h+=`<div class="trow"><span>${item}: ${qty}</span><button class="btn btn-r" onclick="send({t:'mktList',item:'${item}',qty:Math.min(5,${qty}),price:100});setTimeout(()=>{send({t:'getMkt'})},300)">List 5@100g</button></div>`}
     h+=`</div>`;el.innerHTML=h}
+  else if(pTab==='skills'){
+    const xp=me?.xp||0,lv=me?.lv||0,sp=me?.sp||0;
+    const need=100+lv*80;const pct=Math.round(xp/need*100);
+    let h=`<div class="tsec"><h3>⭐ Level ${lv} — ${xp}/${need} XP (${pct}%)</h3>
+      <div style="background:rgba(255,255,255,.1);height:12px;border-radius:6px;margin:6px 0;overflow:hidden">
+        <div style="width:${pct}%;height:100%;background:#f1c40f;border-radius:6px"></div></div>
+      <p style="margin-bottom:8px">Skill Points: <b style="color:#2ecc71">${sp}</b></p>`;
+    const skills=[
+      {id:'range',name:'🎯 Cannon Range',cur:me?.sr||0,desc:`+25 range per level (current: ${100+(me?.sr||0)*25})`},
+      {id:'trade',name:'💰 Trade Mastery',cur:me?.st||0,desc:`Better trade deals (lvl ${me?.st||0})`},
+      {id:'speed',name:'⚡ Ship Speed',cur:me?.ss||0,desc:`+6% speed per level`},
+      {id:'hp',name:'🛡 Hull Strength',cur:me?.shp||0,desc:`+20 HP per level`},
+    ];
+    for(const s of skills){
+      const bar='█'.repeat(s.cur)+'░'.repeat(5-s.cur);
+      h+=`<div class="sc"><div class="si"><h3>${s.name}</h3><p>${bar} ${s.cur}/5 — ${s.desc}</p></div>
+        <button class="btn ${sp>0&&s.cur<5?'btn-g':'btn-d'}" onclick="send({t:'skillUp',skill:'${s.id}'});setTimeout(renderTab,300)">${s.cur<5?'Upgrade':'MAX'}</button></div>`}
+    h+=`</div><div class="tsec"><h3>📊 Stats</h3><p>Kills: ${me?.sc||0} · Wanted: ${me?.w||0} · Gold: ${me?.g||0}</p></div>`;
+    el.innerHTML=h}
 }
 
 // ═══ 3D BUILDERS ═══
@@ -264,7 +283,9 @@ function M(g,c,p,r){const m=new THREE.Mesh(g,new THREE.MeshPhongMaterial({color:
 function mkRowboat(){const g=new THREE.Group();g.add(M(new THREE.BoxGeometry(3.5,1.2,8),0x8B6914,[0,.7,0]));for(const s of[-1,1])g.add(M(new THREE.BoxGeometry(.25,1,8),0x6B4E12,[s*1.6,1.4,0]));g.add(M(new THREE.ConeGeometry(1.7,2.5,4),0x8B6914,[0,.8,5],[Math.PI/2,0,0]));g.add(M(new THREE.BoxGeometry(3.2,1.5,.3),0x6B4E12,[0,1.2,-4.2]));g.add(M(new THREE.CylinderGeometry(.1,.13,6,6),0x543210,[0,4.2,-1]));const sl=M(new THREE.PlaneGeometry(2.8,3.8),0xf0e8d0,[0,5.5,-.8]);sl.material.side=2;sl.material.transparent=true;sl.material.opacity=.85;sl.name='sail';g.add(sl);g.add(M(new THREE.CylinderGeometry(.35,.4,.4,6),0x333333,[0,1.5,3]));const b=M(new THREE.CylinderGeometry(.15,.2,2,6),0x1a1a1a,[0,1.7,4.2],[Math.PI/2,0,0]);b.name='barrel';g.add(b);return g}
 function mkWarship(){const g=new THREE.Group();g.add(M(new THREE.BoxGeometry(10,3.5,20),0x5a3015,[0,1.8,0]));g.add(M(new THREE.BoxGeometry(9,.3,18),0xC4A060,[0,3.8,0]));g.add(M(new THREE.BoxGeometry(8,2.5,5),0x6B3E1A,[0,5,-7]));g.add(M(new THREE.ConeGeometry(5,6,4),0x5a3015,[0,1.8,13],[Math.PI/2,0,0]));for(const z of[-2,4]){g.add(M(new THREE.CylinderGeometry(.2,.25,14,6),0x543210,[0,11,z]));const s=M(new THREE.PlaneGeometry(6,8),0xe8dfc8,[0,13,z+.3]);s.material.side=2;s.material.transparent=true;s.material.opacity=.85;s.name=z===-2?'sail':'sail2';g.add(s)}for(const sd of[-1,1])for(let i=-1;i<=1;i++){const c=M(new THREE.CylinderGeometry(.2,.3,1.8,6),0x222222,[sd*5.2,3.8,i*4]);c.rotation.z=sd*Math.PI/2;g.add(c)}return g}
 function mkTrade(){const g=new THREE.Group();g.add(M(new THREE.BoxGeometry(6,2.5,14),0x6B4E12,[0,1.5,0]));for(const s of[-1,1])g.add(M(new THREE.BoxGeometry(.3,2,14.5),0x543210,[s*3.15,2.8,0]));g.add(M(new THREE.ConeGeometry(3.2,4,4),0x6B4E12,[0,1.5,9],[Math.PI/2,0,0]));g.add(M(new THREE.BoxGeometry(5.5,.2,13),0xC4A060,[0,3,0]));g.add(M(new THREE.BoxGeometry(4,2.5,4),0x7a5020,[0,4.5,-4.5]));g.add(M(new THREE.CylinderGeometry(.18,.22,12,6),0x543210,[0,9.5,1]));const s=M(new THREE.PlaneGeometry(7,9),0xe8dfc8,[0,11,2]);s.material.side=2;s.material.transparent=true;s.material.opacity=.85;s.name='sail';g.add(s);g.add(M(new THREE.CylinderGeometry(.3,.35,.4,6),0x333333,[0,3.3,5.5]));const b=M(new THREE.CylinderGeometry(.15,.2,2.2,6),0x1a1a1a,[0,3.5,6.8],[Math.PI/2,0,0]);b.name='barrel';g.add(b);return g}
-function mkChar(me){const g=new THREE.Group(),c=me?0x2e86c1:0xc0392b;g.add(M(new THREE.BoxGeometry(.9,1.5,.6),c,[0,2.3,0]));g.add(M(new THREE.SphereGeometry(.38,6,6),0xf0c090,[0,3.4,0]));g.add(M(new THREE.CylinderGeometry(.25,.45,.45,6),0x1a1a1a,[0,3.9,0]));for(const s of[-.22,.22]){const l=M(new THREE.BoxGeometry(.3,1,.35),0x4a3520,[s,.9,0]);l.name=s<0?'lL':'lR';g.add(l)}for(const s of[-.6,.6]){const a=M(new THREE.BoxGeometry(.25,1,.25),c,[s,2.3,0]);a.name=s<0?'aL':'aR';g.add(a)}return g}
+function mkChar(me){
+  if(glbChar){const g=glbChar.clone();g.traverse(c=>{if(c.isMesh&&me){c.material=c.material.clone()}});return g}
+  const g=new THREE.Group(),c=me?0x2e86c1:0xc0392b;g.add(M(new THREE.BoxGeometry(.9,1.5,.6),c,[0,2.3,0]));g.add(M(new THREE.SphereGeometry(.38,6,6),0xf0c090,[0,3.4,0]));g.add(M(new THREE.CylinderGeometry(.25,.45,.45,6),0x1a1a1a,[0,3.9,0]));for(const s of[-.22,.22]){const l=M(new THREE.BoxGeometry(.3,1,.35),0x4a3520,[s,.9,0]);l.name=s<0?'lL':'lR';g.add(l)}for(const s of[-.6,.6]){const a=M(new THREE.BoxGeometry(.25,1,.25),c,[s,2.3,0]);a.name=s<0?'aL':'aR';g.add(a)}return g}
 function mkTag(n,me){const c=document.createElement('canvas');c.width=256;c.height=40;const x=c.getContext('2d');x.fillStyle=me?'rgba(46,134,193,.65)':'rgba(0,0,0,.5)';x.beginPath();x.roundRect(4,2,248,36,5);x.fill();x.fillStyle='#fff';x.font='bold 18px sans-serif';x.textAlign='center';x.fillText(n,128,28);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));s.scale.set(12,3,1);return s}
 
 // ═══ ISLAND WITH PERLIN TERRAIN ═══
@@ -309,24 +330,22 @@ function buildHouseMeshes(){
 let giM={};function updateGI(items){const act=new Set();for(const gi of(items||[])){act.add(gi.id);if(!giM[gi.id]){const col=gi.type==='gold'?0xffd700:gi.type==='iron'?0xaaa:0xcd7f32;const m=new THREE.Mesh(new THREE.OctahedronGeometry(.8,0),new THREE.MeshPhongMaterial({color:col}));m.position.set(gi.x,3.8,gi.z);scene.add(m);giM[gi.id]=m}giM[gi.id].rotation.y=Date.now()*.002;giM[gi.id].position.y=3.8+Math.sin(Date.now()*.003)*.3}for(const id in giM)if(!act.has(+id)){scene.remove(giM[id]);delete giM[id]}}
 function updateBarrels(boat,cu){if(!boat.userData.br)boat.userData.br=[];const n=Math.min(10,Math.floor((cu||0)/50));while(boat.userData.br.length<n){const b=M(new THREE.CylinderGeometry(.45,.45,.9,6),0x8B4513);boat.add(b);boat.userData.br.push(b)}while(boat.userData.br.length>n)boat.remove(boat.userData.br.pop());boat.userData.br.forEach((b,i)=>{b.position.set(-1+i%3*1,3.3,-1.5+Math.floor(i/3)*1.2)})}
 
-function getEnt(id){if(!ents[id]){const me=id===myId,ch=mkChar(me);scene.add(ch);const tg=mkTag('...',me);tg.position.y=6;ents[id]={boat:null,bt:null,char:ch,tag:tg,tn:'',to:null}}return ents[id]}
-let glbRowboat=null,glbLoading=false;
-function loadGLB(){if(glbLoading||glbRowboat)return;glbLoading=true;
-  try{const loader=new THREE.GLTFLoader();
-    loader.load('/ship_small.glb',gltf=>{
-      glbRowboat=gltf.scene;
-      glbRowboat.scale.set(2,2,2);
-      glbRowboat.rotation.y=-Math.PI/2; // rotate so bow faces forward
-      console.log('GLB rowboat loaded')},
-      undefined,err=>{console.log('GLB load failed, using primitives');glbLoading=false})}
-  catch(e){console.log('GLTFLoader not available')}}
-function ensBoat(e,t){if(e.bt===t)return;if(e.boat)scene.remove(e.boat);
-  if(t==='rowboat'&&glbRowboat){
-    e.boat=new THREE.Group();
-    const clone=glbRowboat.clone();
-    e.boat.add(clone); // wrap in group so rotation.y on group controls heading
-  }
-  else{e.boat=t==='warship'?mkWarship():t==='tradeship'?mkTrade():mkRowboat()}
+function getEnt(id){if(!ents[id]){const me=id===myId,ch=mkChar(me);scene.add(ch);const tg=mkTag('...',me);tg.position.y=6;ents[id]={boat:null,bt:null,bPrim:true,char:ch,tag:tg,tn:'',to:null,pcx:0,pcz:0}}return ents[id]}
+let glbRowboat=null,glbWarship=null,glbChar=null,glbLoading=false;
+function loadGLB(){if(glbLoading)return;glbLoading=true;
+  try{const L=new THREE.GLTFLoader();
+    L.load('/ship_small.glb',g=>{glbRowboat=new THREE.Group();const m=g.scene;m.scale.set(2,2,2);m.rotation.y=Math.PI;glbRowboat.add(m);console.log('Rowboat GLB loaded')});
+    L.load('/ship_large.glb',g=>{glbWarship=new THREE.Group();const m=g.scene;m.scale.set(2.5,2.5,2.5);m.rotation.y=Math.PI;glbWarship.add(m);console.log('Warship GLB loaded')});
+    L.load('/characters_henry.glb',g=>{glbChar=g.scene;glbChar.scale.set(1.5,1.5,1.5);console.log('Character GLB loaded')});
+  }catch(e){console.log('GLTFLoader error:',e)}}
+function ensBoat(e,t){
+  // Force re-create if GLB loaded after initial primitive creation
+  const hasGlb=(t==='rowboat'&&glbRowboat)||(t==='warship'&&glbWarship);
+  if(e.bt===t&&!(hasGlb&&e.bPrim))return; // skip if same type AND (no glb upgrade needed)
+  if(e.boat)scene.remove(e.boat);
+  if(t==='rowboat'&&glbRowboat){e.boat=glbRowboat.clone();e.bPrim=false}
+  else if(t==='warship'&&glbWarship){e.boat=glbWarship.clone();e.bPrim=false}
+  else{e.boat=t==='warship'?mkWarship():t==='tradeship'?mkTrade():mkRowboat();e.bPrim=true}
   scene.add(e.boat);e.bt=t}
 function rmEnt(id){const e=ents[id];if(!e)return;if(e.boat)scene.remove(e.boat);scene.remove(e.char);if(e.tag.parent)e.tag.parent.remove(e.tag);delete ents[id]}
 const cbG=new THREE.SphereGeometry(.5,5,4),cbMt=new THREE.MeshPhongMaterial({color:0x222});
@@ -385,7 +404,7 @@ function animate(){requestAnimationFrame(animate);const t=clock.getElapsedTime()
   renderer.render(scene,camera);
 }
 function updateHUD(GS){const me=GS?.p[myId];if(!me)return;myGold=me.g;myShip=me.sh;
-  document.getElementById('gold').textContent=`${myGold} Gold`;
+  document.getElementById('gold').textContent=`Lv${me.lv||0} · ${myGold}g · XP:${me.xp||0}/${100+(me.lv||0)*80}${(me.sp||0)>0?' · ⭐'+me.sp+'pts':''}`;
   document.getElementById('hp-b').style.width=(Math.max(0,me.hp)/(me.mhp||100)*100)+'%';
   document.getElementById('hp-t').textContent=`${Math.max(0,me.hp)} / ${me.mhp||100}`;
   document.getElementById('sail').style.display=me.ob?'block':'none';document.getElementById('sail').textContent=['⚓ Stopped','⛵ Half Sail','🚀 Full Sail'][me.sl||1];

@@ -141,10 +141,14 @@ type Player struct {
 	Inp Input; LastF int64; AX,AZ float64; ActP bool; JoinT int64
 	Cargo map[string]int; CargoUsed int; Inv map[string]int
 	Mining bool; MineT int64; BoardedOn string; Sinking float64
-	// Economy
-	Wanted int // bounty on head (from piracy)
-	Kills int
-	CraftedItems map[string]int // crafted items in inv
+	Wanted,Kills int; CraftedItems map[string]int
+	// XP & Skills
+	XP,Level int
+	SkillRange int // extra cannon range (0-5)
+	SkillTrade int // trade discount % (0-5)
+	SkillSpeed int // ship speed bonus (0-5)
+	SkillHP    int // extra HP (0-5)
+	SkillPts   int // unspent skill points
 }
 func (p *Player) Send(msg interface{}) {
 	p.mu.Lock(); defer p.mu.Unlock()
@@ -169,8 +173,10 @@ type PState struct {
 	HP int `json:"hp"`; MHP int `json:"mhp"`; SC int `json:"sc"`; G int `json:"g"`
 	N string `json:"n"`; SH string `json:"sh"`; AX float64 `json:"ax"`; AZ float64 `json:"az"`
 	Cargo map[string]int `json:"cargo"`; CU int `json:"cu"`; Inv map[string]int `json:"inv"`; MN bool `json:"mn"`
-	BO string `json:"bo"`; SK float64 `json:"sk"`; W int `json:"w"` // wanted
-	CI map[string]int `json:"ci"` // crafted items
+	BO string `json:"bo"`; SK float64 `json:"sk"`; W int `json:"w"`
+	CI map[string]int `json:"ci"`
+	XP int `json:"xp"`; LV int `json:"lv"`; SP int `json:"sp"` // skill points
+	SR int `json:"sr"`; ST int `json:"st"`; SS int `json:"ss"`; SHP int `json:"shp"` // skills
 }
 
 func (g *Game) buildState() map[string]interface{} {
@@ -178,7 +184,8 @@ func (g *Game) buildState() map[string]interface{} {
 	for id,pl:=range g.players{p[id]=&PState{CX:pl.CX,CZ:pl.CZ,CY:pl.CY,CR:pl.CR,BX:pl.BX,BZ:pl.BZ,BR:pl.BR,BS:pl.BS,
 		SL:pl.Sails,OB:pl.OnBoat,SW:pl.Swim,HP:pl.HP,MHP:pl.MHP,SC:pl.Score,G:pl.Gold,N:pl.Name,SH:pl.Ship,
 		AX:pl.AX,AZ:pl.AZ,Cargo:pl.Cargo,CU:pl.CargoUsed,Inv:pl.Inv,MN:pl.Mining,BO:pl.BoardedOn,SK:pl.Sinking,
-		W:pl.Wanted,CI:pl.CraftedItems}}
+		W:pl.Wanted,CI:pl.CraftedItems,XP:pl.XP,LV:pl.Level,SP:pl.SkillPts,
+		SR:pl.SkillRange,ST:pl.SkillTrade,SS:pl.SkillSpeed,SHP:pl.SkillHP}}
 	cb:=make([]map[string]float64,len(g.cbs))
 	for i,c:=range g.cbs{cb[i]=map[string]float64{"x":c.X,"z":c.Z,"y":c.Y}}
 	gi:=make([]map[string]interface{},len(g.items))
@@ -191,13 +198,15 @@ func (g *Game) buildState() map[string]interface{} {
 func (g *Game) respawn(p *Player) {
 	x,z:=spawnPos();p.BX,p.BZ=x,z;p.BR=rand.Float64()*math.Pi*2;p.BS=0
 	p.CX,p.CZ,p.CY,p.CR=x,z,0,p.BR;p.OnBoat,p.Swim,p.Mining=true,false,false;p.BoardedOn=""
-	sh:=Ships[p.Ship];p.HP,p.MHP=sh.HP,sh.HP;p.Sails=0;p.Alive=true;p.Sinking=0
+	sh:=Ships[p.Ship];p.MHP=sh.HP+p.SkillHP*20;p.HP=p.MHP;p.Sails=0;p.Alive=true;p.Sinking=0
 }
+func (p *Player) addXP(amt int){p.XP+=amt;need:=100+p.Level*80;for p.XP>=need{p.XP-=need;p.Level++;p.SkillPts++;need=100+p.Level*80}}
 
 func (g *Game) fire(p *Player) {
 	if inSafe(p.BX,p.BZ){return}
 	sh:=Ships[p.Ship];dx,dz:=p.AX-p.BX,p.AZ-p.BZ
-	dist:=math.Max(20,math.Min(250,math.Hypot(dx,dz)))
+	baseRange:=100.0+float64(p.SkillRange)*25
+	dist:=math.Max(15,math.Min(baseRange,math.Hypot(dx,dz)))
 	if sh.Cannons=="front"{g.mkCB(p,p.BX+math.Sin(p.BR)*6,p.BZ+math.Cos(p.BR)*6,p.AX,p.AZ,dist)} else {
 		aim:=math.Atan2(dx,dz);rel:=aim-p.BR;for rel>math.Pi{rel-=math.Pi*2};for rel< -math.Pi{rel+=math.Pi*2}
 		side:=1.0;if rel<=0{side=-1.0};sa:=p.BR+side*math.Pi/2
@@ -207,7 +216,9 @@ func (g *Game) fire(p *Player) {
 }
 func (g *Game) mkCB(p *Player,sx,sz,tx,tz,dist float64){
 	d:=math.Max(1,math.Hypot(tx-sx,tz-sz));spd:=2.8;fl:=dist/spd/20
-	g.cbs=append(g.cbs,&CB{sx,sz,3.5,(tx-sx)/d*spd,(tz-sz)/d*spd,fl*0.45,p.ID,now()})
+	// Add ship velocity to cannonball (physics)
+	svx:=math.Sin(p.BR)*p.BS*0.4;svz:=math.Cos(p.BR)*p.BS*0.4
+	g.cbs=append(g.cbs,&CB{sx,sz,3.5,(tx-sx)/d*spd+svx,(tz-sz)/d*spd+svz,fl*0.45,p.ID,now()})
 }
 
 func (g *Game) tick() {
@@ -231,20 +242,28 @@ func (g *Game) tick() {
 		}
 		if p.OnBoat{
 			if inp.Left{p.BR+=sh.Turn};if inp.Right{p.BR-=sh.Turn}
-			mx:=[]float64{0,sh.Speed*0.45,sh.Speed}[p.Sails]
+			mx:=[]float64{0,sh.Speed*0.45,sh.Speed}[p.Sails]*(1+float64(p.SkillSpeed)*0.06)
 			if inp.Fwd{p.BS=math.Min(p.BS+0.04,mx)}else if inp.Back{p.BS=math.Max(p.BS-0.04,-mx*0.2)}else{
 				if p.Sails==0{p.BS*=0.95}else{p.BS+=(mx*0.7-p.BS)*0.008}}
 			p.BX+=math.Sin(p.BR)*p.BS;p.BZ+=math.Cos(p.BR)*p.BS
 			h:=float64(MAP)/2;p.BX=math.Max(-h,math.Min(h,p.BX));p.BZ=math.Max(-h,math.Min(h,p.BZ))
 			for _,il:=range allIslands{d:=math.Hypot(p.BX-il.X,p.BZ-il.Z);m:=il.R+8
 				if d<m{a:=math.Atan2(p.BX-il.X,p.BZ-il.Z);p.BX=il.X+math.Sin(a)*m;p.BZ=il.Z+math.Cos(a)*m;p.BS*=0.2}}
+			// Ship-to-ship collision
+			for oid,op:=range g.players{if oid==p.ID||!op.Alive||op.Sinking>0||!op.OnBoat{continue}
+				d:=math.Hypot(p.BX-op.BX,p.BZ-op.BZ);minD:=12.0 // ship radius
+				if d<minD&&d>0.1{a:=math.Atan2(p.BX-op.BX,p.BZ-op.BZ);push:=(minD-d)*0.5
+					p.BX+=math.Sin(a)*push;p.BZ+=math.Cos(a)*push
+					op.BX-=math.Sin(a)*push;op.BZ-=math.Cos(a)*push
+					// Transfer momentum
+					p.BS*=0.7;op.BS*=0.7}}
 			p.CX,p.CZ,p.CR=p.BX,p.BZ,p.BR;p.CY=2.0
 			if inp.Act&&!p.ActP{p.ActP=true;shore:=nearShore(p.BX,p.BZ)
 				if shore!=nil{a:=math.Atan2(p.BX-shore.X,p.BZ-shore.Z);p.CX=shore.X+math.Sin(a)*(shore.R-6)
 					p.CZ=shore.Z+math.Cos(a)*(shore.R-6);p.CY=3;p.CR=a;p.OnBoat=false;p.Swim=false;p.Mining=false}}
 			if !inp.Act{p.ActP=false}
 		}else{
-			if inp.Left{p.CR+=0.06};if inp.Right{p.CR-=0.06}
+			if inp.Left{p.CR+=0.08};if inp.Right{p.CR-=0.08}
 			var mx,mz float64
 			if inp.Fwd{mx=math.Sin(p.CR)*WALK;mz=math.Cos(p.CR)*WALK}
 			if inp.Back{mx=-math.Sin(p.CR)*WALK*0.5;mz=-math.Cos(p.CR)*WALK*0.5}
@@ -274,7 +293,7 @@ func (g *Game) tick() {
 		for id,p:=range g.players{if id==c.Owner||!p.Alive||p.Sinking>0||inSafe(p.BX,p.BZ){continue}
 			if math.Hypot(c.X-p.BX,c.Z-p.BZ)<12{p.HP-=CB_DMG;g.cbs=append(g.cbs[:i],g.cbs[i+1:]...)
 				if p.HP<=0{p.Sinking=0.01;k:=g.players[c.Owner]
-					if k!=nil{k.Score++;k.Gold+=100+p.Wanted/2;k.Kills++ // bounty claim
+					if k!=nil{k.Score++;k.Gold+=100+p.Wanted/2;k.Kills++;k.addXP(50) // bounty claim
 						// Drop some cargo as loot
 						for item,qty:=range p.Cargo{if qty>0{drop:=qty/2;if drop<1{drop=1}
 							g.itemID++;g.items=append(g.items,GItem{g.itemID,p.BX+float64(rand.Intn(10)-5),p.BZ+float64(rand.Intn(10)-5),item})
@@ -378,8 +397,8 @@ func (g *Game) handleWS(w http.ResponseWriter, r *http.Request) {
 			if !p.OnBoat{var isl*Island;if sm.Idx==-1{isl=safeIsland}else if sm.Idx>=0&&sm.Idx<len(tradeIslands){isl=tradeIslands[sm.Idx]}
 				if isl!=nil{if ig,ok:=isl.Goods[sm.Good];ok{have:=p.Cargo[sm.Good];sell:=sm.Qty;if have<sell{sell=have};if sell<=0{break}
 					pr:=int(float64(ig.Price)*1.3);p.Gold+=sell*pr;p.Cargo[sm.Good]-=sell;if p.Cargo[sm.Good]<=0{delete(p.Cargo,sm.Good)}
-					p.CargoUsed-=sell*Goods[sm.Good].Size
-					p.Send(map[string]interface{}{"t":"msg","v":fmt.Sprintf("Sold %d for %dg",sell,sell*pr)})}}}
+					p.CargoUsed-=sell*Goods[sm.Good].Size;p.addXP(sell*3)
+					p.Send(map[string]interface{}{"t":"msg","v":fmt.Sprintf("Sold %d for %dg +%dxp",sell,sell*pr,sell*3)})}}}
 		case "sellOre":
 			var sm struct{Ore string;Qty int};json.Unmarshal(data,&sm)
 			if od,ok:=Ores[sm.Ore];ok&&!p.OnBoat{have:=p.Inv[sm.Ore]+p.Cargo[sm.Ore];sell:=sm.Qty;if have<sell{sell=have};if sell>0{
@@ -412,7 +431,17 @@ func (g *Game) handleWS(w http.ResponseWriter, r *http.Request) {
 				p.Send(map[string]interface{}{"t":"msg","v":fmt.Sprintf("Sold %d %s for %dg",sell,il.Name,sell*il.SellPrice)})}
 		case "mine":
 			if !p.OnBoat&&!p.Mining{land:=onLand(p.CX,p.CZ);if land!=nil&&land.Ore!=""{p.Mining=true;p.MineT=now()}}
-		case "critterGold":p.Gold+=5
+		case "critterGold":p.Gold+=5;p.addXP(1)
+		case "skillUp":
+			var sm struct{Skill string`json:"skill"`};json.Unmarshal(data,&sm)
+			if p.SkillPts<=0{break}
+			switch sm.Skill{
+			case "range":if p.SkillRange<5{p.SkillRange++;p.SkillPts--;p.Send(map[string]interface{}{"t":"msg","v":"Range upgraded!"})}
+			case "trade":if p.SkillTrade<5{p.SkillTrade++;p.SkillPts--;p.Send(map[string]interface{}{"t":"msg","v":"Trade upgraded!"})}
+			case "speed":if p.SkillSpeed<5{p.SkillSpeed++;p.SkillPts--;p.Send(map[string]interface{}{"t":"msg","v":"Speed upgraded!"})}
+			case "hp":if p.SkillHP<5{p.SkillHP++;p.SkillPts--;p.MHP=Ships[p.Ship].HP+p.SkillHP*20;p.HP=p.MHP
+				p.Send(map[string]interface{}{"t":"msg","v":"HP upgraded!"})}
+			}
 		case "buyHouse":
 			var hm struct{Slot int;Type string};json.Unmarshal(data,&hm)
 			if hm.Slot>=0&&hm.Slot<len(houseSlots){hs:=houseSlots[hm.Slot];hd,ok:=HouseDefs[hm.Type]
