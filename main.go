@@ -271,16 +271,26 @@ func (g *Game) tick() {
 				} else {p.Inv[gi.Type]++}
 				g.items=append(g.items[:i],g.items[i+1:]...)}}
 			// Disembark: E toggles countdown
-			if inp.Act&&!p.ActP{p.ActP=true
-				if p.EmbarkT>0{p.EmbarkT=0;p.Send(map[string]interface{}{"t":"msg","v":"Cancelled"})} else {
-					shore:=nearShore(p.BX,p.BZ);if shore!=nil{p.EmbarkT=n;p.Send(map[string]interface{}{"t":"msg","v":"Disembarking 3..."})}}}
-			if !inp.Act{p.ActP=false}
-			if p.EmbarkT>0{elapsed:=n-p.EmbarkT;rem:=3-int(elapsed/1000)
-				if rem>0&&int(elapsed/1000)!=int((elapsed-50)/1000){p.Send(map[string]interface{}{"t":"msg","v":fmt.Sprintf("Disembarking %d...",rem)})}
-				if elapsed>=3000{shore:=nearShore(p.BX,p.BZ);if shore!=nil{
-					a:=math.Atan2(p.BX-shore.X,p.BZ-shore.Z);p.CX=shore.X+math.Sin(a)*(shore.R-6)
-					p.CZ=shore.Z+math.Cos(a)*(shore.R-6);p.CY=3;p.CR=a;p.OnBoat=false;p.Swim=false;p.Mining=false};p.EmbarkT=0}}
-		}else{
+			if inp.Act && !p.ActP {
+    p.ActP = true
+    if p.EmbarkT > 0 {
+        p.EmbarkT = 0
+        p.Send(map[string]interface{}{"t": "msg", "v": "Cancelled"})
+    } else {
+        shore := nearShore(p.BX, p.BZ)
+        if shore != nil {
+            a := math.Atan2(p.BX-shore.X, p.BZ-shore.Z)
+            p.CX = shore.X + math.Sin(a)*(shore.R-6)
+            p.CZ = shore.Z + math.Cos(a)*(shore.R-6)
+            p.CY = 3
+            p.CR = a
+            p.OnBoat = false
+            p.Swim = false
+            p.Mining = false
+            p.Send(map[string]interface{}{"t": "msg", "v": "Disembarked!"})
+        }
+    }
+}
 			// Classic controls: A/D turn, W/S move forward/back
 			if inp.Left{p.CR+=0.07};if inp.Right{p.CR-=0.07}
 			var mx,mz float64
