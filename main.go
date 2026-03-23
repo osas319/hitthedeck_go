@@ -273,10 +273,10 @@ func (g *Game) tick() {
 			// Disembark: E toggles countdown
 			if inp.Act&&!p.ActP{p.ActP=true
 				if p.EmbarkT>0{p.EmbarkT=0;p.Send(map[string]interface{}{"t":"msg","v":"Cancelled"})} else {
-					shore:=nearShore(p.BX,p.BZ);if shore!=nil{p.EmbarkT=n;p.Send(map[string]interface{}{"t":"msg","v":"Disembarking 3..."})}}}
+					shore:=nearShore(p.BX,p.BZ);if shore!=nil{p.EmbarkT=n;p.Send(map[string]interface{}{"t":"msg","v":"Disembarking 3..."});p.Send(map[string]interface{}{"t":"cd","v":3})}}}
 			if !inp.Act{p.ActP=false}
 			if p.EmbarkT>0{elapsed:=n-p.EmbarkT;rem:=3-int(elapsed/1000)
-				if rem>0&&int(elapsed/1000)!=int((elapsed-50)/1000){p.Send(map[string]interface{}{"t":"msg","v":fmt.Sprintf("Disembarking %d...",rem)})}
+				if rem>0&&int(elapsed/1000)!=int((elapsed-50)/1000){p.Send(map[string]interface{}{"t":"msg","v":fmt.Sprintf("Disembarking %d...",rem)});p.Send(map[string]interface{}{"t":"cd","v":rem})}
 				if elapsed>=3000{shore:=nearShore(p.BX,p.BZ);if shore!=nil{
 					a:=math.Atan2(p.BX-shore.X,p.BZ-shore.Z);p.CX=shore.X+math.Sin(a)*(shore.R-6)
 					p.CZ=shore.Z+math.Cos(a)*(shore.R-6);p.CY=3;p.CR=a;p.OnBoat=false;p.Swim=false;p.Mining=false};p.EmbarkT=0}}

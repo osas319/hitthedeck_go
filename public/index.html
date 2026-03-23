@@ -32,6 +32,9 @@
 #death{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;justify-content:center;align-items:center;z-index:100;flex-direction:column;color:#fff}
 #death h1{font-size:42px;color:#e74c3c}
 #conn-s{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.85);color:#f1c40f;padding:14px 24px;border-radius:10px;z-index:200;display:none;font-size:16px}
+#countdown{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:90;pointer-events:none;display:none}
+#countdown span{font-size:120px;font-weight:900;color:#f1c40f;text-shadow:0 0 40px rgba(241,196,15,.6),0 0 80px rgba(241,196,15,.3),0 4px 8px rgba(0,0,0,.5);animation:cdPop .8s ease-out forwards}
+@keyframes cdPop{0%{opacity:0;transform:scale(2.5)}15%{opacity:1;transform:scale(1)}80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.6)}}
 .mbtn{width:44px;height:44px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.25);border-radius:10px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer}
 #panel{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:150;display:none;justify-content:center;align-items:center}
 #panel-box{background:rgba(20,20,30,.96);border:2px solid rgba(241,196,15,.4);border-radius:12px;padding:20px 24px;color:#fff;min-width:520px;max-width:640px;max-height:80vh;overflow-y:auto;font-size:13px}
@@ -74,6 +77,7 @@
 <div id="inv" class="h"><h4>Inventory</h4><div id="inv-list"></div></div>
 <div id="cargo" class="h"><h4>Cargo</h4><div id="cargo-list"></div></div>
 <div id="death"><h1>SUNK!</h1><p id="dmsg"></p></div>
+<div id="countdown"><span></span></div>
 <div id="mob">
   <div id="joyzone"><div id="joystick"></div></div>
   <div id="mb-fire" class="mbtn">FIRE</div>
@@ -156,6 +160,7 @@ function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}
     case 'left':rmEnt(msg.id);break;
     case 'sunk':document.getElementById('dmsg').textContent=`Sunk by ${msg.by}!`;document.getElementById('death').style.display='flex';setTimeout(()=>document.getElementById('death').style.display='none',2500);break;
     case 'msg':document.getElementById('pmsg').textContent=msg.v;break;
+    case 'cd':{const cdEl=document.getElementById('countdown'),cdSpan=cdEl.querySelector('span');cdSpan.textContent=msg.v;cdEl.style.display='block';cdSpan.style.animation='none';cdSpan.offsetHeight;cdSpan.style.animation='cdPop .8s ease-out forwards';setTimeout(()=>cdEl.style.display='none',900)};break;
     case 'upd':if(msg.gold!==undefined)myGold=msg.gold;if(msg.owned)myOwned=msg.owned;if(msg.ship)myShip=msg.ship;break;
     case 'mkt':mktList=msg.list||[];if(panelOpen&&pTab==='market')renderTab();break;
     case 'hs':hStore={slot:msg.slot,storage:msg.storage,used:msg.used,cap:msg.cap};if(panelOpen&&pTab==='housing')renderTab();break;
