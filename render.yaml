@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: krew3d-go
+    runtime: go
+    buildCommand: go build -ldflags="-s -w" -o krew3d .
+    startCommand: ./krew3d
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: PORT
+        value: "10000"
