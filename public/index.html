@@ -51,6 +51,7 @@
 <div id="conn-s" class="h"></div><div id="cross"></div>
 <div id="ctrl" class="h"><strong style="color:#f1c40f">Controls</strong><br><kbd>WASD</kbd> Move · <kbd>Click</kbd> Fire<br><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Sails · <kbd>E</kbd> Board/Leave<br><kbd>Space</kbd> Jump · <kbd>B</kbd> Menu<br><kbd>F</kbd> Mine · <kbd>G</kbd> Deposit<br><kbd>Right-Click</kbd> Free Look</div>
 <div id="gold" class="h"></div><div id="safez" class="h">Safe Zone</div>
+<div id="wanted" class="h" style="top:40px;right:10px;background:rgba(231,76,60,.3);color:#e74c3c;font-size:13px;font-weight:bold;padding:4px 14px;border-radius:6px;display:none;border:1px solid rgba(231,76,60,.4)"></div>
 <div id="hp-w" class="h"><div id="hp-b"></div><div id="hp-t"></div></div>
 <div id="sail" class="h"></div><div id="prompt" class="h"></div>
 <div id="sb" class="h"><h3>Players</h3><div id="slist"></div></div>
@@ -60,10 +61,11 @@
 <div id="cargo" class="h"><h4>Cargo</h4><div id="cargo-list"></div></div>
 <div id="death"><h1>SUNK!</h1><p id="dmsg"></p></div>
 <div id="panel"><div id="panel-box"><h2 id="ptitle">Menu</h2><div id="pgold"></div>
-<div class="tabs"><div class="tab active" data-tab="ships">Ships</div><div class="tab" data-tab="trade">Trade</div><div class="tab" data-tab="housing">Housing</div><div class="tab" data-tab="market">Market</div></div>
+<div class="tabs"><div class="tab active" data-tab="ships">Ships</div><div class="tab" data-tab="trade">Trade</div><div class="tab" data-tab="craft">Craft</div><div class="tab" data-tab="smuggle">Smuggle</div><div class="tab" data-tab="housing">Housing</div><div class="tab" data-tab="market">Market</div></div>
 <div id="tab-content"></div><div id="pmsg"></div><button id="pclose">Close [B]</button></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 // ═══ ADAPTIVE INTERPOLATION ═══
 let stBuf=[],INTERP=100,lastStateT=0,jitter=0;
@@ -89,7 +91,8 @@ function getIS(){
 }
 
 let ws,scene,camera,renderer,clock;
-let myId=null,MAP=6000,ISL=[],MISL=[],SAFE=null,ALL=[],ROCKS=[],SD={},GD={},OD={},HD={};
+let myId=null,MAP=6000,ISL=[],MISL=[],SAFE=null,HIDDEN=null,ALL=[],ROCKS=[],SD={},GD={},OD={},HD={};
+let RECIPES={},ILLEGALS={};
 let water,aimRing,dots=[];let ents={},cbPool=[];
 let keys={},mX=0,mY=0,mW={x:0,z:0};
 let playing=false,panelOpen=false,pTab='ships',freeLook=false,flY=0,flP=0;
@@ -118,7 +121,9 @@ function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}
   ws.onerror=()=>{};
   ws.onmessage=e=>{const msg=JSON.parse(e.data);switch(msg.t){
     case 'init':myId=msg.id;MAP=msg.map;SD=msg.ships||{};GD=msg.goods||{};OD=msg.ores||{};HD=msg.houseDefs||{};
-      if(msg.state)stBuf=[msg.state];ISL=msg.islands||[];MISL=msg.mineIslands||[];SAFE=msg.safeIsland;ALL=[SAFE,...ISL,...MISL];ROCKS=msg.rocks||[];hSlots=msg.houseSlots||[];
+      RECIPES=msg.recipes||{};ILLEGALS=msg.illegals||{};HIDDEN=msg.hiddenPort||null;
+      if(msg.state)stBuf=[msg.state];ISL=msg.islands||[];MISL=msg.mineIslands||[];SAFE=msg.safeIsland;
+      ALL=[SAFE,...ISL];if(HIDDEN)ALL.push(HIDDEN);ALL.push(...MISL);ROCKS=msg.rocks||[];hSlots=msg.houseSlots||[];
       if(scene){try{for(const i of ALL)buildIsland(i);buildRocks();buildHouseMeshes();console.log('World built:',ALL.length,'islands')}catch(e){console.error('World build error:',e)}}
       if(msg.spawnX!==undefined){window._sp={x:msg.spawnX,z:msg.spawnZ,r:msg.spawnR||0};if(camera){camera.position.set(msg.spawnX-Math.sin(msg.spawnR||0)*60,80,msg.spawnZ-Math.cos(msg.spawnR||0)*60);camera.lookAt(msg.spawnX,5,msg.spawnZ)}}
       if(playing)send({t:'setName',v:document.getElementById('nin').value.trim()||'Pirate'});break;
@@ -149,6 +154,7 @@ function initThree(){
   const waterTex=new THREE.TextureLoader().load('/water.jpg');waterTex.wrapS=waterTex.wrapT=THREE.RepeatWrapping;waterTex.repeat.set(80,80);
   water=new THREE.Mesh(new THREE.PlaneGeometry(12000,12000,50,50),new THREE.MeshPhongMaterial({map:waterTex,transparent:true,opacity:.92,shininess:60,specular:0x2288aa}));
   water.rotation.x=-Math.PI/2;scene.add(water);
+  loadGLB(); // load 3D ship model
   aimRing=new THREE.Mesh(new THREE.RingGeometry(2,3,16),new THREE.MeshBasicMaterial({color:0xff3333,transparent:true,opacity:.4,side:2}));aimRing.rotation.x=-Math.PI/2;aimRing.position.y=.5;aimRing.visible=false;scene.add(aimRing);
   for(let i=0;i<3;i++){const d=new THREE.Mesh(new THREE.RingGeometry(1.5,2.5,12),new THREE.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:.4,side:2}));d.rotation.x=-Math.PI/2;d.position.y=.3;d.visible=false;scene.add(d);dots.push(d)}
   if(ALL.length){try{for(const i of ALL)buildIsland(i);buildRocks();buildHouseMeshes();console.log('Islands built in initThree')}catch(e){console.error('initThree island error:',e)}}
@@ -205,11 +211,50 @@ function renderTab(){
         h+=`</span></div>`}
       else h+=`<div class="sc"><div class="si"><h3>Slot ${i+1}: Owned</h3></div></div>`}
     h+=`</div>`;el.innerHTML=h}
+  else if(pTab==='craft'){
+    let h=`<div class="tsec"><h3>⚒ Crafting</h3><p style="opacity:.5;font-size:11px;margin-bottom:8px">Combine materials to create upgrades</p>`;
+    const allMats={...(me?.inv||{}), ...(me?.cargo||{}), ...(me?.ci||{})};
+    h+=`<div style="margin-bottom:8px;opacity:.6">Materials: ${Object.entries(allMats).filter(([,v])=>v>0).map(([k,v])=>`${k}:${v}`).join(', ')||'none'}</div>`;
+    for(const[id,r]of Object.entries(RECIPES)){
+      const needs=Object.entries(r.needs).map(([m,n])=>`${m}×${n}`).join(' + ');
+      const canCraft=Object.entries(r.needs).every(([m,n])=>(allMats[m]||0)>=n);
+      h+=`<div class="sc"><div class="si"><h3>${r.icon} ${r.name}</h3><p>Needs: ${needs} · Sells: ${r.sellPrice}g</p></div>
+        <button class="btn ${canCraft?'btn-g':'btn-d'}" onclick="send({t:'craft',recipe:'${id}'});setTimeout(renderTab,300)">${canCraft?'Craft':'Need mats'}</button></div>`}
+    // Sell crafted items
+    const ci=me?.ci||{};if(Object.keys(ci).length){h+=`<div style="margin-top:8px"><b>Crafted Items:</b>`;
+      for(const[item,qty]of Object.entries(ci)){if(qty<=0)continue;
+        h+=`<div class="trow"><span>${item}: ${qty}</span><button class="btn btn-r" onclick="send({t:'sellCrafted',item:'${item}',qty:1});setTimeout(renderTab,300)">Sell 1</button></div>`}
+      h+=`</div>`}
+    h+=`</div>`;
+    // Repair section
+    const dmg=(me?.mhp||100)-(me?.hp||100);
+    if(dmg>0){const sh=SD[me?.sh]||{};const cost=dmg*(sh.repairCost||1);
+      h+=`<div class="tsec"><h3>🔧 Repair Ship</h3><p>Damage: ${dmg} HP · Cost: ${cost}g</p>
+        <button class="btn btn-y" onclick="send({t:'repair'});setTimeout(renderTab,300)">Repair (${cost}g)</button></div>`}
+    el.innerHTML=h}
+  else if(pTab==='smuggle'){
+    let h=`<div class="tsec"><h3>🏴‍☠️ Smuggling</h3><p style="opacity:.5;font-size:11px;margin-bottom:8px">Buy illegal goods at Black Cove, sell anywhere for huge profit. Increases wanted level!</p>`;
+    const atHidden=HIDDEN&&me&&Math.hypot((me.ob?me.bx:me.cx)-HIDDEN.x,(me.ob?me.bz:me.cz)-HIDDEN.z)<(HIDDEN.r||50)+20;
+    if(atHidden){h+=`<div style="color:#2ecc71;margin-bottom:6px">📍 At Black Cove</div>`;
+      for(const[id,il]of Object.entries(ILLEGALS)){const have=me?.cargo?.[id]||0;
+        h+=`<div class="trow"><span>${il.icon} ${il.name} (Buy:${il.buyPrice}g → Sell:${il.sellPrice}g)</span><span>
+          <button class="btn btn-r" onclick="send({t:'buyIllegal',item:'${id}',qty:5});setTimeout(renderTab,300)">Buy 5</button>
+          <button class="btn btn-g" onclick="send({t:'sellIllegal',item:'${id}',qty:5});setTimeout(renderTab,300)">Sell 5</button> Have:${have}</span></div>`}}
+    else{h+=`<p style="opacity:.5">Go to Black Cove (hidden island) to buy illegal goods</p>`;
+      // Show sell option if have illegal goods
+      const hasIllegal=Object.keys(ILLEGALS).some(k=>(me?.cargo?.[k]||0)>0);
+      if(hasIllegal){h+=`<div style="margin-top:8px"><b>Sell Illegal Goods:</b>`;
+        for(const[id,il]of Object.entries(ILLEGALS)){const have=me?.cargo?.[id]||0;if(have<=0)continue;
+          h+=`<div class="trow"><span>${il.icon} ${il.name}: ${have} (${il.sellPrice}g each)</span>
+            <button class="btn btn-g" onclick="send({t:'sellIllegal',item:'${id}',qty:${have}});setTimeout(renderTab,300)">Sell All</button></div>`}
+        h+=`</div>`}}
+    h+=`</div><div class="tsec"><h3>⚠ Wanted Level: ${me?.w||0}</h3><p style="opacity:.5">Wanted increases from piracy & smuggling. Bounty hunters get ${Math.round((me?.w||0)/2)}g for sinking you.</p></div>`;
+    el.innerHTML=h}
   else if(pTab==='market'){let h=`<div class="tsec"><h3>Public Market</h3>`;
     if(!mktList.length)h+='<p style="opacity:.4">No listings</p>';
     for(const m of mktList)h+=`<div class="trow"><span>${m.item} x${m.qty} by ${m.seller||'?'} @${m.price}g</span><button class="btn btn-g" onclick="send({t:'mktBuy',id:${m.id}});setTimeout(()=>{send({t:'getMkt'})},300)">Buy ${m.qty*m.price}g</button></div>`;
     h+=`</div><div class="tsec"><h3>List for Sale</h3>`;
-    const items={...(me?.cargo||{}), ...(me?.inv||{})};for(const[item,qty]of Object.entries(items)){if(qty<=0)continue;
+    const items={...(me?.cargo||{}), ...(me?.inv||{}), ...(me?.ci||{})};for(const[item,qty]of Object.entries(items)){if(qty<=0)continue;
       h+=`<div class="trow"><span>${item}: ${qty}</span><button class="btn btn-r" onclick="send({t:'mktList',item:'${item}',qty:Math.min(5,${qty}),price:100});setTimeout(()=>{send({t:'getMkt'})},300)">List 5@100g</button></div>`}
     h+=`</div>`;el.innerHTML=h}
 }
@@ -265,7 +310,18 @@ let giM={};function updateGI(items){const act=new Set();for(const gi of(items||[
 function updateBarrels(boat,cu){if(!boat.userData.br)boat.userData.br=[];const n=Math.min(10,Math.floor((cu||0)/50));while(boat.userData.br.length<n){const b=M(new THREE.CylinderGeometry(.45,.45,.9,6),0x8B4513);boat.add(b);boat.userData.br.push(b)}while(boat.userData.br.length>n)boat.remove(boat.userData.br.pop());boat.userData.br.forEach((b,i)=>{b.position.set(-1+i%3*1,3.3,-1.5+Math.floor(i/3)*1.2)})}
 
 function getEnt(id){if(!ents[id]){const me=id===myId,ch=mkChar(me);scene.add(ch);const tg=mkTag('...',me);tg.position.y=6;ents[id]={boat:null,bt:null,char:ch,tag:tg,tn:'',to:null}}return ents[id]}
-function ensBoat(e,t){if(e.bt===t)return;if(e.boat)scene.remove(e.boat);e.boat=t==='warship'?mkWarship():t==='tradeship'?mkTrade():mkRowboat();scene.add(e.boat);e.bt=t}
+let glbWarship=null,glbLoading=false;
+function loadGLB(){if(glbLoading||glbWarship)return;glbLoading=true;
+  try{const loader=new THREE.GLTFLoader();
+    loader.load('/ship_small.glb',gltf=>{glbWarship=gltf.scene;glbWarship.scale.set(2,2,2);console.log('GLB ship loaded')},
+      undefined,err=>{console.log('GLB load failed, using primitives');glbLoading=false})}
+  catch(e){console.log('GLTFLoader not available')}}
+function ensBoat(e,t){if(e.bt===t)return;if(e.boat)scene.remove(e.boat);
+  if(t==='warship'&&glbWarship){e.boat=glbWarship.clone();e.boat.traverse(c=>{if(c.isMesh)c.material=c.material.clone()})}
+  else{e.boat=t==='warship'?mkWarship():t==='tradeship'?mkTrade():mkRowboat()}
+  // Add sail reference for warship glb
+  if(t==='warship'&&!e.boat.getObjectByName('sail')){const sl=M(new THREE.PlaneGeometry(6,8),0xe8dfc8,[0,13,-2]);sl.material.side=2;sl.material.transparent=true;sl.material.opacity=.85;sl.name='sail';e.boat.add(sl)}
+  scene.add(e.boat);e.bt=t}
 function rmEnt(id){const e=ents[id];if(!e)return;if(e.boat)scene.remove(e.boat);scene.remove(e.char);if(e.tag.parent)e.tag.parent.remove(e.tag);delete ents[id]}
 const cbG=new THREE.SphereGeometry(.5,5,4),cbMt=new THREE.MeshPhongMaterial({color:0x222});
 function getCB(i){while(cbPool.length<=i){const m=new THREE.Mesh(cbG,cbMt);m.visible=false;scene.add(m);cbPool.push(m)}return cbPool[i]}
@@ -329,6 +385,8 @@ function updateHUD(GS){const me=GS?.p[myId];if(!me)return;myGold=me.g;myShip=me.
   document.getElementById('sail').style.display=me.ob?'block':'none';document.getElementById('sail').textContent=['⚓ Stopped','⛵ Half Sail','🚀 Full Sail'][me.sl||1];
   const inSZ=SAFE&&Math.hypot((me.ob?me.bx:me.cx)-SAFE.x,(me.ob?me.bz:me.cz)-SAFE.z)<SAFE.r+30;
   document.getElementById('safez').style.display=inSZ?'block':'none';
+  const wantedEl=document.getElementById('wanted');
+  if(me.w>0){wantedEl.style.display='block';wantedEl.textContent=`☠ Wanted: ${me.w}`}else wantedEl.style.display='none';
   document.getElementById('lbl').textContent=me.ob?(SD[me.sh]?.name||'Boat'):me.sw?'🏊 Swimming!':me.mn?'⛏ Mining...':'🏝 Land [B]Menu [F]Mine [G]Deposit';
   const ap=document.getElementById('prompt');nearIdx=-99;
   if(me.ob){
