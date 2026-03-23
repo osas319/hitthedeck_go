@@ -10,8 +10,12 @@ High-performance multiplayer pirate game server written in Go with native WebSoc
 
 ## Local Dev
 ```bash
+#LINUX
 go build -o krew3d .
 ./krew3d
+#WINDOWS
+go build -o krew3d.exe .
+.\krew3d.exe
 # Open http://localhost:3000
 ```
 
