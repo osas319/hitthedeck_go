@@ -530,6 +530,11 @@ func (g *Game) handleWS(w http.ResponseWriter, r *http.Request) {
 			ml:=make([]map[string]interface{},len(g.market))
 			for i,m:=range g.market{ml[i]=map[string]interface{}{"id":m.ID,"seller":m.SName,"item":m.Item,"qty":m.Qty,"price":m.Price}}
 			p.Send(map[string]interface{}{"t":"mkt","list":ml})
+		case "chat":
+			var cm struct{V string `json:"v"`};json.Unmarshal(data,&cm)
+			if len(cm.V)>0{if len(cm.V)>100{cm.V=cm.V[:100]}
+				chatMsg,_:=json.Marshal(map[string]interface{}{"t":"chat","n":p.Name,"v":cm.V})
+				for _,op:=range g.players{op.mu.Lock();op.Conn.SetWriteDeadline(time.Now().Add(50*time.Millisecond));op.Conn.WriteMessage(websocket.TextMessage,chatMsg);op.mu.Unlock()}}
 		}
 		g.mu.Unlock()
 	}
