@@ -56,7 +56,7 @@ type HouseSlot struct {
 type MarketListing struct{ ID int; Seller,SName,Item string; Qty,Price int }
 
 // HUGE safe island in center
-var safeIsland = &Island{X:0,Z:0,R:600,Name:"Haven (Safe)",Safe:true,
+var safeIsland = &Island{X:0,Z:0,R:250,Name:"Haven (Safe)",Safe:true,
 	Goods:map[string]*IGood{"coffee":{45,500},"spice":{50,400},"beer":{22,600}}}
 
 var tradeIslands = []*Island{
@@ -92,7 +92,7 @@ func initWorld() {
 	for i:=0;i<12;i++ {
 		a := float64(i)/12*math.Pi*2
 		houseSlots = append(houseSlots, &HouseSlot{
-			X: safeIsland.X+math.Cos(a)*350, Z: safeIsland.Z+math.Sin(a)*350,
+			X: safeIsland.X+math.Cos(a)*150, Z: safeIsland.Z+math.Sin(a)*150,
 			Storage: make(map[string]int),
 		})
 	}
