@@ -3,148 +3,141 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{overflow:hidden;background:#0a4a6e;font-family:'Segoe UI',sans-serif;user-select:none}
 #overlay{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:flex;justify-content:center;align-items:center;flex-direction:column;color:#fff}
-#overlay h2{color:#f1c40f;font-size:28px;margin-bottom:6px}#overlay .sub{opacity:.5;font-size:12px;margin-bottom:18px}
-#overlay input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:10px 14px;border-radius:8px;font-size:15px;outline:none;width:200px;text-align:center;margin-bottom:10px}
-#overlay button{padding:10px 30px;background:#f1c40f;color:#000;border:none;border-radius:8px;font-size:14px;font-weight:bold;cursor:pointer}
-#overlay button:disabled{background:#555;color:#999}#conn-msg{color:#f1c40f;font-size:13px;margin-bottom:12px}
+#overlay h2{color:#f1c40f;font-size:26px;margin-bottom:6px}#overlay .sub{opacity:.5;font-size:11px;margin-bottom:16px}
+#overlay input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:8px 12px;border-radius:6px;font-size:14px;outline:none;width:180px;text-align:center;margin-bottom:8px}
+#overlay button{padding:8px 24px;background:#f1c40f;color:#000;border:none;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer}
+#overlay button:disabled{background:#555;color:#999}#conn-msg{color:#f1c40f;font-size:12px;margin-bottom:10px}
 .h{position:fixed;z-index:10}
-#ctrl{top:10px;left:10px;background:rgba(0,0,0,.5);color:#fff;padding:6px 10px;border-radius:6px;font-size:9px;border:1px solid rgba(255,255,255,.08);line-height:1.6;display:none}
-#ctrl kbd{background:rgba(255,255,255,.1);padding:0 3px;border-radius:2px;font-size:8px}
-#gold{top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#f1c40f;font-size:13px;font-weight:bold;padding:4px 14px;border-radius:6px;display:none;border:1px solid rgba(241,196,15,.25)}
-#hp-w{bottom:22px;left:50%;transform:translateX(-50%);width:240px;height:18px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:9px;overflow:hidden;display:none}
-#hp-b{height:100%;width:100%;background:linear-gradient(90deg,#e74c3c,#f1c40f 50%,#2ecc71);transition:width .2s;border-radius:9px}
-#hp-t{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-weight:bold;font-size:10px;text-shadow:1px 1px 1px #000}
-#sail{bottom:46px;left:50%;transform:translateX(-50%);color:#fff;font-size:10px;display:none;background:rgba(0,0,0,.35);padding:2px 8px;border-radius:5px}
-#prompt{bottom:75px;left:50%;transform:translateX(-50%);color:#f1c40f;font-size:13px;font-weight:bold;display:none;background:rgba(0,0,0,.55);padding:5px 14px;border-radius:7px}
-#sb{top:8px;right:8px;background:rgba(0,0,0,.45);color:#fff;padding:6px 10px;border-radius:6px;font-size:10px;display:none;border:1px solid rgba(255,255,255,.08);max-height:180px}
-#sb h3{margin-bottom:3px;color:#f1c40f;font-size:11px}.sr{display:flex;justify-content:space-between;gap:10px;padding:1px 0}.sr.me{color:#2ecc71;font-weight:bold}
-#lbl{top:62px;left:10px;color:rgba(255,255,255,.45);font-size:9px;display:none;background:rgba(0,0,0,.25);padding:1px 5px;border-radius:3px}
-#pc{bottom:3px;left:8px;color:rgba(255,255,255,.25);font-size:8px;display:none}
-#mm{bottom:12px;right:12px;width:180px;height:180px;background:rgba(10,30,60,.8);border:1px solid rgba(255,255,255,.15);border-radius:6px;display:none;cursor:crosshair}
-#inv{bottom:12px;left:12px;background:rgba(0,0,0,.5);color:#fff;padding:6px 10px;border-radius:6px;font-size:10px;display:none;border:1px solid rgba(255,255,255,.08);min-width:100px}
-#inv h4{color:#f1c40f;font-size:10px;margin-bottom:3px}
-#cargo{bottom:55px;left:12px;background:rgba(0,0,0,.5);color:#fff;padding:6px 10px;border-radius:6px;font-size:10px;display:none;border:1px solid rgba(255,255,255,.08)}
-#cargo h4{color:#3498db;font-size:10px;margin-bottom:3px}
-#cross{position:fixed;pointer-events:none;z-index:5;display:none;width:16px;height:16px}
-#cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.5)}
-#cross::before{width:14px;height:2px;top:7px;left:1px}#cross::after{width:2px;height:14px;top:1px;left:7px}
+#ctrl{top:8px;left:8px;background:rgba(0,0,0,.5);color:#fff;padding:5px 8px;border-radius:5px;font-size:8px;border:1px solid rgba(255,255,255,.08);line-height:1.5;display:none}
+#ctrl kbd{background:rgba(255,255,255,.1);padding:0 2px;border-radius:2px;font-size:7px}
+#gold{top:6px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#f1c40f;font-size:12px;font-weight:bold;padding:3px 12px;border-radius:5px;display:none}
+#hp-w{bottom:20px;left:50%;transform:translateX(-50%);width:220px;height:16px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.15);border-radius:8px;overflow:hidden;display:none}
+#hp-b{height:100%;width:100%;background:linear-gradient(90deg,#e74c3c,#f1c40f 50%,#2ecc71);transition:width .2s;border-radius:8px}
+#hp-t{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-weight:bold;font-size:9px;text-shadow:1px 1px 1px #000}
+#sail{bottom:40px;left:50%;transform:translateX(-50%);color:#fff;font-size:9px;display:none;background:rgba(0,0,0,.3);padding:1px 7px;border-radius:4px}
+#prompt{bottom:65px;left:50%;transform:translateX(-50%);color:#f1c40f;font-size:12px;font-weight:bold;display:none;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:6px}
+#sb{top:6px;right:6px;background:rgba(0,0,0,.4);color:#fff;padding:5px 8px;border-radius:5px;font-size:9px;display:none;border:1px solid rgba(255,255,255,.06);max-height:150px}
+#sb h3{margin-bottom:2px;color:#f1c40f;font-size:10px}.sr{display:flex;justify-content:space-between;gap:8px;padding:1px 0}.sr.me{color:#2ecc71;font-weight:bold}
+#lbl{top:56px;left:8px;color:rgba(255,255,255,.4);font-size:8px;display:none;background:rgba(0,0,0,.2);padding:1px 4px;border-radius:2px}
+#pc{bottom:2px;left:6px;color:rgba(255,255,255,.2);font-size:7px;display:none}
+#mm{bottom:10px;right:10px;width:170px;height:170px;background:rgba(10,30,60,.8);border:1px solid rgba(255,255,255,.12);border-radius:5px;display:none;cursor:crosshair}
+#inv{bottom:10px;left:10px;background:rgba(0,0,0,.45);color:#fff;padding:4px 8px;border-radius:5px;font-size:9px;display:none;border:1px solid rgba(255,255,255,.06)}
+#inv h4{color:#f1c40f;font-size:9px}
+#cargo{bottom:50px;left:10px;background:rgba(0,0,0,.45);color:#fff;padding:4px 8px;border-radius:5px;font-size:9px;display:none;border:1px solid rgba(255,255,255,.06)}
+#cargo h4{color:#3498db;font-size:9px}
+#safezone-ind{top:30px;left:50%;transform:translateX(-50%);background:rgba(46,204,113,.3);color:#2ecc71;font-size:11px;font-weight:bold;padding:3px 14px;border-radius:6px;display:none;border:1px solid rgba(46,204,113,.4)}
+#cross{position:fixed;pointer-events:none;z-index:5;display:none;width:14px;height:14px}
+#cross::before,#cross::after{content:'';position:absolute;background:rgba(255,255,255,.45)}
+#cross::before{width:12px;height:2px;top:6px;left:1px}#cross::after{width:2px;height:12px;top:1px;left:6px}
 #death{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:100;flex-direction:column;color:#fff}
-#death h1{font-size:36px;color:#e74c3c}
-#mkt{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:150;display:none;justify-content:center;align-items:center}
-#mkt-box{background:rgba(20,20,30,.95);border:2px solid rgba(241,196,15,.4);border-radius:12px;padding:20px 24px;color:#fff;min-width:520px;max-height:80vh;overflow-y:auto}
-#mkt-box h2{color:#f1c40f;margin-bottom:3px;font-size:18px}#mgold{color:#f1c40f;margin-bottom:10px;font-size:12px}
-.sc{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:6px;padding:8px 12px;margin-bottom:6px}
-.si h3{font-size:13px;margin-bottom:1px}.si p{font-size:10px;opacity:.5}
-.sb2{padding:4px 12px;border:none;border-radius:5px;font-size:11px;font-weight:bold;cursor:pointer;min-width:70px}
-.sb2.buy{background:#f1c40f;color:#000}.sb2.eq{background:#3498db;color:#fff}.sb2.on{background:#444;color:#888}
-#mclose{display:block;margin:10px auto 0;padding:4px 16px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:5px;cursor:pointer;font-size:11px}
-#smsg{color:#2ecc71;font-size:11px;text-align:center;margin-top:4px;min-height:14px}
-.trade-section{margin-top:10px;border-top:1px solid rgba(255,255,255,.1);padding-top:8px}
-.trade-section h3{color:#3498db;font-size:13px;margin-bottom:6px}
-.trade-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:11px}
-.trade-btn{padding:2px 8px;border:none;border-radius:3px;font-size:10px;cursor:pointer;margin-left:4px}
-.trade-btn.tbuy{background:#2ecc71;color:#000}.trade-btn.tsell{background:#e67e22;color:#fff}
+#death h1{font-size:34px;color:#e74c3c}
+#conn-s{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#f1c40f;padding:10px 18px;border-radius:7px;z-index:200;display:none;font-size:13px}
+/* Panel (market/shop/housing) */
+#panel{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:150;display:none;justify-content:center;align-items:center}
+#panel-box{background:rgba(20,20,30,.95);border:2px solid rgba(241,196,15,.35);border-radius:10px;padding:16px 20px;color:#fff;min-width:480px;max-width:600px;max-height:80vh;overflow-y:auto;font-size:11px}
+#panel-box h2{color:#f1c40f;font-size:16px;margin-bottom:3px}#pgold{color:#f1c40f;margin-bottom:8px;font-size:11px}
+.sc{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:5px;padding:6px 10px;margin-bottom:4px}
+.si h3{font-size:12px;margin-bottom:1px}.si p{font-size:9px;opacity:.4}
+.btn{padding:3px 10px;border:none;border-radius:4px;font-size:10px;font-weight:bold;cursor:pointer;margin-left:3px}
+.btn-y{background:#f1c40f;color:#000}.btn-b{background:#3498db;color:#fff}.btn-g{background:#2ecc71;color:#000}.btn-r{background:#e74c3c;color:#fff}.btn-d{background:#444;color:#888}
+#pclose{display:block;margin:8px auto 0;padding:3px 14px;background:rgba(255,255,255,.07);color:#fff;border:1px solid rgba(255,255,255,.12);border-radius:4px;cursor:pointer;font-size:10px}
+#pmsg{color:#2ecc71;font-size:10px;text-align:center;margin-top:3px;min-height:12px}
+.tsec{margin-top:6px;border-top:1px solid rgba(255,255,255,.08);padding-top:6px}
+.tsec h3{font-size:11px;margin-bottom:4px}
+.trow{display:flex;justify-content:space-between;align-items:center;padding:2px 0;font-size:10px}
+/* Tabs */
+.tabs{display:flex;gap:2px;margin-bottom:8px}.tab{padding:3px 10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:4px 4px 0 0;cursor:pointer;font-size:10px;color:#aaa}
+.tab.active{background:rgba(241,196,15,.15);color:#f1c40f;border-color:rgba(241,196,15,.3)}
 </style>
 </head><body>
-<div id="overlay"><h2>KREW 3D</h2><div class="sub">Multiplayer Pirate Battle & Trade</div><div id="conn-msg">Connecting...</div>
+<div id="overlay"><h2>KREW 3D</h2><div class="sub">Pirate MMO</div><div id="conn-msg">Connecting...</div>
 <input id="nin" placeholder="Pirate name..." maxlength="16"><button id="nbtn" disabled>Connecting...</button></div>
-<div id="conn-status" class="h" style="display:none;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.8);color:#f1c40f;padding:12px 20px;border-radius:8px;z-index:200"></div>
-<div id="cross"></div>
-<div id="ctrl" class="h"><strong style="color:#f1c40f">Controls</strong><br><kbd>WASD</kbd> Move <kbd>Click</kbd> Fire<br><kbd>123</kbd> Sails <kbd>E</kbd> Board<br><kbd>Space</kbd> Jump <kbd>B</kbd> Shop<br><kbd>F</kbd> Mine <kbd>RClick</kbd> Look</div>
-<div id="gold" class="h"></div><div id="hp-w" class="h"><div id="hp-b"></div><div id="hp-t"></div></div>
+<div id="conn-s" class="h"></div><div id="cross"></div>
+<div id="ctrl" class="h"><strong style="color:#f1c40f">Controls</strong><br><kbd>WASD</kbd> Move <kbd>Click</kbd> Fire<br><kbd>123</kbd> Sails <kbd>E</kbd> Board<br><kbd>Space</kbd> Jump <kbd>B</kbd> Menu<br><kbd>F</kbd> Mine <kbd>G</kbd> Deposit<br><kbd>RClick</kbd> Free Look</div>
+<div id="gold" class="h"></div><div id="safezone-ind" class="h">Safe Zone</div>
+<div id="hp-w" class="h"><div id="hp-b"></div><div id="hp-t"></div></div>
 <div id="sail" class="h"></div><div id="prompt" class="h"></div>
-<div id="sb" class="h"><h3>Scoreboard</h3><div id="slist"></div></div>
+<div id="sb" class="h"><h3>Players</h3><div id="slist"></div></div>
 <div id="lbl" class="h"></div><div id="pc" class="h"></div>
-<canvas id="mm" class="h" width="180" height="180"></canvas>
+<canvas id="mm" class="h" width="170" height="170"></canvas>
 <div id="inv" class="h"><h4>Inventory</h4><div id="inv-list"></div></div>
 <div id="cargo" class="h"><h4>Cargo</h4><div id="cargo-list"></div></div>
 <div id="death"><h1>SUNK!</h1><p id="dmsg"></p></div>
-<div id="mkt"><div id="mkt-box"><h2>Ship Market & Trade</h2><div id="mgold"></div><div id="ship-list"></div><div id="trade-area"></div><div id="smsg"></div><button id="mclose">Close [B]</button></div></div>
+
+<div id="panel"><div id="panel-box">
+  <h2 id="ptitle">Menu</h2><div id="pgold"></div>
+  <div class="tabs"><div class="tab active" data-tab="ships">Ships</div><div class="tab" data-tab="trade">Trade</div><div class="tab" data-tab="housing">Housing</div><div class="tab" data-tab="market">Market</div></div>
+  <div id="tab-content"></div>
+  <div id="pmsg"></div><button id="pclose">Close [B]</button>
+</div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ═══ PERF: State buffer for interpolation ═══
-let stateBuffer=[],INTERP_DELAY=80;
-let ws,scene,camera,renderer,clock;
-let myId=null,MAP=1600,ISL=[],MISL=[],ALL_ISL=[],ROCKS=[],SDEFS={},GDEFS={},ODEFS={};
+let stateBuffer=[],INTERP=80,ws,scene,camera,renderer,clock;
+let myId=null,MAP=1600,ISL=[],MISL=[],SAFE=null,ALL=[],ROCKS=[],SD={},GD={},OD={},HD={};
 let water,aimRing,dots=[];let ents={},cbPool=[];
 let keys={},mX=0,mY=0,mW={x:0,z:0};
-let playing=false,mktOpen=false,freeLook=false,flYaw=0,flPitch=0;
-let myGold=5000,myOwned=['rowboat'],myShip='rowboat';
-let nearIslandIdx=-1;
+let playing=false,panelOpen=false,panelTab='ships',freeLook=false,flY=0,flP=0;
+let myGold=5000,myOwned=['rowboat'],myShip='rowboat',nearIslIdx=-1,nearHouseSlot=-1;
+let marketListings=[],houseSlots=[],houseStorage={};
 const ray=new THREE.Raycaster(),mv=new THREE.Vector2(),wP=new THREE.Plane(new THREE.Vector3(0,1,0),0);
 const mmC=document.getElementById('mm'),mmX=mmC.getContext('2d');
 
 function lerp(a,b,t){return a+(b-a)*t}
-function lerpAngle(a,b,t){let d=b-a;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return a+d*t}
-function getInterpolatedState(){
-  const renderT=Date.now()-INTERP_DELAY;
-  while(stateBuffer.length>2&&stateBuffer[1].t<=renderT)stateBuffer.shift();
+function lerpA(a,b,t){let d=b-a;while(d>Math.PI)d-=Math.PI*2;while(d<-Math.PI)d+=Math.PI*2;return a+d*t}
+function getIS(){
+  const rt=Date.now()-INTERP;while(stateBuffer.length>2&&stateBuffer[1].t<=rt)stateBuffer.shift();
   if(stateBuffer.length<2)return stateBuffer[stateBuffer.length-1]||null;
   const s0=stateBuffer[0],s1=stateBuffer[1],dt=s1.t-s0.t;if(dt<=0)return s1;
-  const t=Math.max(0,Math.min(1,(renderT-s0.t)/dt));
-  const out={t:renderT,p:{},cb:s1.cb,gi:s1.gi};
-  const ids=new Set([...Object.keys(s0.p),...Object.keys(s1.p)]);
-  for(const id of ids){const a=s0.p[id],b=s1.p[id];if(!a){out.p[id]=b;continue}if(!b){out.p[id]=a;continue}
-    out.p[id]={bx:lerp(a.bx,b.bx,t),bz:lerp(a.bz,b.bz,t),br:lerpAngle(a.br,b.br,t),bs:lerp(a.bs,b.bs,t),
-      cx:lerp(a.cx,b.cx,t),cz:lerp(a.cz,b.cz,t),cy:lerp(a.cy,b.cy,t),cr:lerpAngle(a.cr,b.cr,t),
-      sl:b.sl,ob:b.ob,sw:b.sw,hp:b.hp,mhp:b.mhp,sc:b.sc,g:b.g,n:b.n,sh:b.sh,ax:b.ax,az:b.az,
-      cargo:b.cargo,cu:b.cu,inv:b.inv,mn:b.mn}}
+  const t=Math.max(0,Math.min(1,(rt-s0.t)/dt)),out={t:rt,p:{},cb:s1.cb,gi:s1.gi,hs:s1.hs};
+  for(const id of new Set([...Object.keys(s0.p),...Object.keys(s1.p)])){
+    const a=s0.p[id],b=s1.p[id];if(!a){out.p[id]=b;continue}if(!b){out.p[id]=a;continue}
+    out.p[id]={bx:lerp(a.BX,b.BX,t),bz:lerp(a.BZ,b.BZ,t),br:lerpA(a.BR,b.BR,t),bs:lerp(a.BS,b.BS,t),
+      cx:lerp(a.CX,b.CX,t),cz:lerp(a.CZ,b.CZ,t),cy:lerp(a.CY,b.CY,t),cr:lerpA(a.CR,b.CR,t),
+      sl:b.SL,ob:b.OB,sw:b.SW,hp:b.HP,mhp:b.MHP,sc:b.SC,g:b.G,n:b.N,sh:b.SH,
+      cargo:b.Cargo,cu:b.CU,inv:b.Inv,mn:b.MN,bo:b.BO,sk:b.SK}}
   return out;
 }
+function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o))}
 
-// ═══ SEND HELPER ═══
-function send(obj){if(ws&&ws.readyState===1)ws.send(JSON.stringify(obj))}
-
-// ═══ WEBSOCKET CONNECTION ═══
-function connectWS(){
-  const proto=location.protocol==='https:'?'wss':'ws';
-  ws=new WebSocket(`${proto}://${location.host}/ws`);
-  ws.onopen=()=>{
-    console.log('WS connected');
-    document.getElementById('conn-msg').textContent='Connected!';
-    document.getElementById('nbtn').disabled=false;
-    document.getElementById('nbtn').textContent='SET SAIL!';
-    document.getElementById('conn-status').style.display='none';
-  };
-  ws.onclose=()=>{
-    console.log('WS disconnected');
-    if(!playing){document.getElementById('conn-msg').textContent='Reconnecting...';document.getElementById('nbtn').disabled=true}
-    else{document.getElementById('conn-status').textContent='Reconnecting...';document.getElementById('conn-status').style.display='block'}
-    setTimeout(connectWS,1500);
-  };
-  ws.onerror=()=>{};
-  ws.onmessage=(e)=>{
-    const msg=JSON.parse(e.data);
-    switch(msg.t){
-      case 'init':{
-        const old=myId;myId=msg.id;MAP=msg.map;SDEFS=msg.ships||{};GDEFS=msg.goods||{};ODEFS=msg.ores||{};
-        if(msg.state)stateBuffer=[msg.state];
-        if(!ISL.length&&msg.islands){ISL=msg.islands;MISL=msg.mineIslands||[];ALL_ISL=[...ISL,...MISL];ROCKS=msg.rocks||[];
-          if(scene){for(const i of ALL_ISL)buildIsland(i);buildRocks()}}
-        if(old&&old!==myId&&ents[old])rmEnt(old);
-        if(msg.spawnX!==undefined){const r=msg.spawnR||0;camera&&(camera.position.set(msg.spawnX-Math.sin(r)*40,22,msg.spawnZ-Math.cos(r)*40),camera.lookAt(msg.spawnX,3,msg.spawnZ))}
-        if(playing)send({t:'setName',v:document.getElementById('nin').value.trim()||'Pirate'});
-        break;
+// ═══ WEBSOCKET ═══
+(function(){
+  function connect(){
+    const proto=location.protocol==='https:'?'wss':'ws';
+    ws=new WebSocket(`${proto}://${location.host}/ws`);
+    ws.onopen=()=>{document.getElementById('conn-msg').textContent='Connected!';document.getElementById('nbtn').disabled=false;document.getElementById('nbtn').textContent='SET SAIL!';document.getElementById('conn-s').style.display='none'};
+    ws.onclose=()=>{if(!playing){document.getElementById('conn-msg').textContent='Reconnecting...';document.getElementById('nbtn').disabled=true}else{document.getElementById('conn-s').textContent='Reconnecting...';document.getElementById('conn-s').style.display='block'}setTimeout(connect,1500)};
+    ws.onerror=()=>{};
+    ws.onmessage=e=>{
+      const msg=JSON.parse(e.data);
+      switch(msg.t){
+        case 'init':
+          myId=msg.id;MAP=msg.map;SD=msg.ships||{};GD=msg.goods||{};OD=msg.ores||{};HD=msg.houseDefs||{};
+          if(msg.state)stateBuffer=[msg.state];
+          if(!ISL.length){ISL=msg.islands||[];MISL=msg.mineIslands||[];SAFE=msg.safeIsland;ALL=[SAFE,...ISL,...MISL];
+            houseSlots=msg.houseSlots||[];
+            if(scene){for(const i of ALL)buildIsland(i);buildRocks();buildHouses()}}
+          if(msg.spawnX!==undefined&&camera){const r=msg.spawnR||0;camera.position.set(msg.spawnX-Math.sin(r)*40,22,msg.spawnZ-Math.cos(r)*40);camera.lookAt(msg.spawnX,3,msg.spawnZ)}
+          if(playing)send({t:'setName',v:document.getElementById('nin').value.trim()||'Pirate'});
+          if(msg.market)marketListings=msg.market;
+          break;
+        case 's':stateBuffer.push(msg.d);if(stateBuffer.length>30)stateBuffer.splice(0,stateBuffer.length-30);break;
+        case 'left':rmEnt(msg.id);break;
+        case 'sunk':document.getElementById('dmsg').textContent=`Sunk by ${msg.by}!`;document.getElementById('death').style.display='flex';setTimeout(()=>document.getElementById('death').style.display='none',2500);break;
+        case 'msg':document.getElementById('pmsg').textContent=msg.v;setTimeout(()=>{if(document.getElementById('pmsg').textContent===msg.v)document.getElementById('pmsg').textContent=''},3000);break;
+        case 'upd':if(msg.gold!==undefined)myGold=msg.gold;if(msg.owned)myOwned=msg.owned;if(msg.ship)myShip=msg.ship;break;
+        case 'market':marketListings=msg.listings||[];if(panelOpen&&panelTab==='market')renderTab();break;
+        case 'houseStorage':houseStorage={slot:msg.slot,storage:msg.storage,used:msg.used,cap:msg.cap};if(panelOpen&&panelTab==='housing')renderTab();break;
       }
-      case 's':{const s=msg.d;stateBuffer.push(s);if(stateBuffer.length>30)stateBuffer.splice(0,stateBuffer.length-30);break}
-      case 'left':rmEnt(msg.id);break;
-      case 'sunk':document.getElementById('dmsg').textContent=`Sunk by ${msg.by}!`;document.getElementById('death').style.display='flex';setTimeout(()=>document.getElementById('death').style.display='none',2500);break;
-      case 'msg':document.getElementById('smsg').textContent=msg.v;setTimeout(()=>document.getElementById('smsg').textContent='',3000);break;
-      case 'upd':if(msg.gold!==undefined)myGold=msg.gold;if(msg.owned)myOwned=msg.owned;if(msg.ship)myShip=msg.ship;if(mktOpen)renderMkt();break;
-    }
-  };
-}
-connectWS();
+    };
+  }
+  connect();
+})();
 
-// ═══ START GAME ═══
-document.getElementById('nbtn').onclick=go;
-document.getElementById('nin').onkeydown=e=>{if(e.key==='Enter'&&!document.getElementById('nbtn').disabled)go()};
-function go(){
-  document.getElementById('overlay').style.display='none';
+document.getElementById('nbtn').onclick=go;document.getElementById('nin').onkeydown=e=>{if(e.key==='Enter'&&!document.getElementById('nbtn').disabled)go()};
+function go(){document.getElementById('overlay').style.display='none';
   ['ctrl','gold','hp-w','sail','sb','mm','pc','lbl','cross','inv','cargo'].forEach(x=>document.getElementById(x).style.display='block');
-  playing=true;initThree();send({t:'setName',v:document.getElementById('nin').value.trim()||'Pirate'});animate();
-}
+  playing=true;initThree();send({t:'setName',v:document.getElementById('nin').value.trim()||'Pirate'});animate()}
 
 // ═══ THREE.JS ═══
 function initThree(){
@@ -153,54 +146,94 @@ function initThree(){
   renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'high-performance'});
   renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0x7ec8e3);
   document.body.appendChild(renderer.domElement);clock=new THREE.Clock();
-  scene.add(new THREE.AmbientLight(0xffffff,.5));
-  const sun=new THREE.DirectionalLight(0xfff0d0,1);sun.position.set(300,400,200);scene.add(sun);
+  scene.add(new THREE.AmbientLight(0xffffff,.5));const sun=new THREE.DirectionalLight(0xfff0d0,1);sun.position.set(300,400,200);scene.add(sun);
   scene.add(new THREE.HemisphereLight(0x87ceeb,0x3a7a5a,.25));
   water=new THREE.Mesh(new THREE.PlaneGeometry(5000,5000,40,40),new THREE.MeshPhongMaterial({color:0x0a4a6e,transparent:true,opacity:.9,shininess:40,specular:0x0d3355}));
   water.rotation.x=-Math.PI/2;scene.add(water);
-  aimRing=new THREE.Mesh(new THREE.RingGeometry(1.5,2,16),new THREE.MeshBasicMaterial({color:0xff3333,transparent:true,opacity:.4,side:THREE.DoubleSide}));
-  aimRing.rotation.x=-Math.PI/2;aimRing.position.y=.5;aimRing.visible=false;scene.add(aimRing);
-  for(let i=0;i<3;i++){const d=new THREE.Mesh(new THREE.RingGeometry(1,1.5,12),new THREE.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:.4,side:THREE.DoubleSide}));d.rotation.x=-Math.PI/2;d.position.y=.3;d.visible=false;scene.add(d);dots.push(d)}
-  if(ALL_ISL.length){for(const i of ALL_ISL)buildIsland(i);buildRocks()}
+  aimRing=new THREE.Mesh(new THREE.RingGeometry(1.5,2,16),new THREE.MeshBasicMaterial({color:0xff3333,transparent:true,opacity:.4,side:2}));aimRing.rotation.x=-Math.PI/2;aimRing.position.y=.5;aimRing.visible=false;scene.add(aimRing);
+  for(let i=0;i<3;i++){const d=new THREE.Mesh(new THREE.RingGeometry(1,1.5,12),new THREE.MeshBasicMaterial({color:0xff6600,transparent:true,opacity:.4,side:2}));d.rotation.x=-Math.PI/2;d.position.y=.3;d.visible=false;scene.add(d);dots.push(d)}
+  if(ALL.length){for(const i of ALL)buildIsland(i);buildRocks();buildHouses()}
   window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
-  window.addEventListener('keydown',e=>{if(!playing)return;if(mktOpen&&e.code==='KeyB'){toggleMkt();return}if(mktOpen)return;keys[e.code]=true;
+  window.addEventListener('keydown',e=>{if(!playing)return;if(panelOpen&&e.code==='KeyB'){togglePanel();return}if(panelOpen)return;keys[e.code]=true;
     if(e.code==='Digit1')send({t:'setSails',v:0});if(e.code==='Digit2')send({t:'setSails',v:1});if(e.code==='Digit3')send({t:'setSails',v:2});
-    if(e.code==='KeyB')toggleMkt();if(e.code==='KeyF')send({t:'mine'});if(e.code==='Space')e.preventDefault()});
+    if(e.code==='KeyB')togglePanel();if(e.code==='KeyF')send({t:'mine'});
+    if(e.code==='KeyG')send({t:'deposit'}); // deposit ores to ship
+    if(e.code==='Space')e.preventDefault()});
   window.addEventListener('keyup',e=>{keys[e.code]=false});window.addEventListener('blur',()=>{keys={};freeLook=false});
-  window.addEventListener('mousemove',e=>{mX=e.clientX;mY=e.clientY;if(freeLook){flYaw-=e.movementX*.003;flPitch=Math.max(-.5,Math.min(.8,flPitch-e.movementY*.003))}});
-  window.addEventListener('mousedown',e=>{if(e.button===0&&!mktOpen&&playing)send({t:'fire'});if(e.button===2){freeLook=true;renderer.domElement.requestPointerLock?.()}});
-  window.addEventListener('mouseup',e=>{if(e.button===2){freeLook=false;document.exitPointerLock?.();flYaw=0;flPitch=0}});
+  window.addEventListener('mousemove',e=>{mX=e.clientX;mY=e.clientY;if(freeLook){flY-=e.movementX*.003;flP=Math.max(-.5,Math.min(.8,flP-e.movementY*.003))}});
+  window.addEventListener('mousedown',e=>{if(e.button===0&&!panelOpen&&playing)send({t:'fire'});if(e.button===2){freeLook=true;renderer.domElement.requestPointerLock?.()}});
+  window.addEventListener('mouseup',e=>{if(e.button===2){freeLook=false;document.exitPointerLock?.();flY=0;flP=0}});
   renderer.domElement.addEventListener('contextmenu',e=>e.preventDefault());
-  mmC.addEventListener('click',e=>{const r=mmC.getBoundingClientRect();send({t:'tp',x:((e.clientX-r.left)/180-.5)*MAP,z:((e.clientY-r.top)/180-.5)*MAP})});
-  document.getElementById('mclose').onclick=()=>toggleMkt();
+  mmC.addEventListener('click',e=>{const r=mmC.getBoundingClientRect();send({t:'tp',x:((e.clientX-r.left)/170-.5)*MAP,z:((e.clientY-r.top)/170-.5)*MAP})});
+  document.getElementById('pclose').onclick=()=>togglePanel();
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{panelTab=t.dataset.tab;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');renderTab()});
 }
 
-function toggleMkt(){const GS=getInterpolatedState();const me=GS?.p[myId];if(!me)return;if(!mktOpen&&me.ob)return;mktOpen=!mktOpen;document.getElementById('mkt').style.display=mktOpen?'flex':'none';if(mktOpen)renderMkt()}
-function renderMkt(){
-  const GS=getInterpolatedState();const me=GS?.p[myId];if(me)myGold=me.g;
-  document.getElementById('mgold').textContent=`Gold: ${myGold}`;
-  const el=document.getElementById('ship-list');el.innerHTML='';
-  for(const[t,d]of Object.entries(SDEFS)){const own=myOwned.includes(t),eq=myShip===t,can=myGold>=d.price;let bc,bt;
-    if(eq){bc='on';bt='Equipped'}else if(own){bc='eq';bt='Equip'}else if(can){bc='buy';bt=`${d.price}g`}else{bc='on';bt=`${d.price}g`}
-    const ci=d.cannons==='side'?`${d.count} side cannons`:'Front cannon';const cg=d.cargo?` Cargo:${d.cargo}`:'';
-    const c=document.createElement('div');c.className='sc';c.innerHTML=`<div class="si"><h3>${d.name}</h3><p>HP:${d.hp} Spd:${Math.round(d.speed*100)} ${ci}${cg}</p></div><button class="sb2 ${bc}">${bt}</button>`;
-    el.appendChild(c);c.querySelector('button').onclick=()=>{if(eq)return;if(own)send({t:'equip',v:t});else send({t:'buy',v:t})}}
-  const ta=document.getElementById('trade-area');ta.innerHTML='';
-  if(nearIslandIdx>=0&&nearIslandIdx<ISL.length){
-    const isl=ISL[nearIslandIdx];let h=`<div class="trade-section"><h3>Trade at ${isl.name}</h3>`;
-    for(const[g,info]of Object.entries(isl.goods||{})){const gd=GDEFS[g]||{};const have=me?.cargo?.[g]||0;
-      h+=`<div class="trade-row"><span>${gd.icon||''} ${gd.name||g} (${info.stock} stk, ${info.price}g)</span>
-        <span><button class="trade-btn tbuy" data-g="${g}" data-a="buy">Buy 5</button>
-        <button class="trade-btn tsell" data-g="${g}" data-a="sell">Sell 5</button> Have:${have}</span></div>`}
-    if(me?.inv&&Object.keys(me.inv).length){h+=`<div style="margin-top:6px;border-top:1px solid rgba(255,255,255,.08);padding-top:4px"><b style="font-size:10px">Sell Ores:</b>`;
-      for(const[o,qty]of Object.entries(me.inv)){if(qty<=0)continue;const od=ODEFS[o]||{};
-        h+=`<div class="trade-row"><span>${od.icon||''} ${od.name||o} x${qty} (${od.value}g ea)</span><button class="trade-btn tsell" data-o="${o}" data-a="sellore">Sell All</button></div>`}h+=`</div>`}
-    h+=`</div>`;ta.innerHTML=h;
-    ta.querySelectorAll('.trade-btn').forEach(b=>b.onclick=()=>{
-      if(b.dataset.a==='buy')send({t:'buyGood',good:b.dataset.g,qty:5,idx:nearIslandIdx});
-      else if(b.dataset.a==='sell')send({t:'sellGood',good:b.dataset.g,qty:5,idx:nearIslandIdx});
-      else if(b.dataset.a==='sellore')send({t:'sellOre',ore:b.dataset.o,qty:999});
-      setTimeout(renderMkt,200)})}
+// ═══ PANEL (shop/trade/housing/market) ═══
+function togglePanel(){const GS=getIS();const me=GS?.p[myId];if(!me)return;if(!panelOpen&&me.ob)return;panelOpen=!panelOpen;
+  document.getElementById('panel').style.display=panelOpen?'flex':'none';if(panelOpen){send({t:'getMarket'});renderTab()}}
+function renderTab(){
+  const GS=getIS();const me=GS?.p[myId];if(me)myGold=me.g;
+  document.getElementById('pgold').textContent=`Gold: ${myGold}`;
+  const el=document.getElementById('tab-content');el.innerHTML='';
+  if(panelTab==='ships'){
+    for(const[t,d]of Object.entries(SD)){const own=myOwned.includes(t),eq=myShip===t,can=myGold>=d.price;
+      let bc,bt;if(eq){bc='btn-d';bt='Equipped'}else if(own){bc='btn-b';bt='Equip'}else if(can){bc='btn-y';bt=`${d.price}g`}else{bc='btn-d';bt=`${d.price}g`}
+      const ci=d.cannons==='side'?`${d.count} side`:'Front';const cg=d.cargo?` Crg:${d.cargo}`:'';
+      const c=document.createElement('div');c.className='sc';c.innerHTML=`<div class="si"><h3>${d.name}</h3><p>HP:${d.hp} Spd:${Math.round(d.speed*100)} ${ci} Crew:${d.crew}${cg}</p></div><button class="btn ${bc}">${bt}</button>`;
+      el.appendChild(c);c.querySelector('button').onclick=()=>{if(eq)return;if(own)send({t:'equip',v:t});else send({t:'buy',v:t});setTimeout(renderTab,200)}}
+  } else if(panelTab==='trade'){
+    let h='';
+    if(nearIslIdx>=0){
+      const isl=nearIslIdx===-1?SAFE:ISL[nearIslIdx];
+      if(isl){h+=`<div class="tsec"><h3>Trade at ${isl.name}</h3>`;
+        for(const[g,info]of Object.entries(isl.goods||{})){const gd=GD[g]||{};const have=me?.cargo?.[g]||0;
+          h+=`<div class="trow"><span>${gd.icon||''} ${gd.name||g} (${info.stock} stk, ${info.price}g)</span>
+            <span><button class="btn btn-g" onclick="send({t:'buyGood',good:'${g}',qty:5,idx:${nearIslIdx}});setTimeout(renderTab,200)">Buy 5</button>
+            <button class="btn btn-r" onclick="send({t:'sellGood',good:'${g}',qty:5,idx:${nearIslIdx}});setTimeout(renderTab,200)">Sell 5</button> Own:${have}</span></div>`}
+        // Sell ores
+        const inv=me?.inv||{};if(Object.keys(inv).length){h+=`<div style="margin-top:4px"><b>Sell Ores:</b>`;
+          for(const[o,qty]of Object.entries(inv)){if(qty<=0)continue;const od=OD[o]||{};
+            h+=`<div class="trow"><span>${od.icon||''} ${od.name||o} x${qty} (${od.value}g ea)</span>
+              <button class="btn btn-r" onclick="send({t:'sellOre',ore:'${o}',qty:999});setTimeout(renderTab,200)">Sell All</button></div>`}h+=`</div>`}
+        h+=`</div>`}
+    } else h='<p style="opacity:.4">Go to an island to trade</p>';
+    el.innerHTML=h;
+  } else if(panelTab==='housing'){
+    let h=`<div class="tsec"><h3>Houses on Haven Island</h3>`;
+    for(let i=0;i<houseSlots.length;i++){const hs=houseSlots[i];
+      if(hs.owner===myId){
+        h+=`<div class="sc"><div class="si"><h3>Slot ${i+1}: Your ${hs.type}</h3><p>Storage: ${houseStorage.slot===i?`${houseStorage.used}/${houseStorage.cap}`:'...'}</p></div>
+          <span><button class="btn btn-b" onclick="send({t:'getHouseStorage',slot:${i}});setTimeout(renderTab,300)">View</button>
+          <button class="btn btn-g" onclick="send({t:'houseDeposit',slot:${i}});setTimeout(renderTab,300)">Deposit All</button></span></div>`;
+        if(houseStorage.slot===i&&houseStorage.storage){
+          for(const[item,qty]of Object.entries(houseStorage.storage)){if(qty<=0)continue;
+            h+=`<div class="trow"><span>${item}: ${qty}</span><button class="btn btn-y" onclick="send({t:'houseWithdraw',slot:${i},item:'${item}',qty:10});setTimeout(renderTab,300)">Take 10</button></div>`}
+        }
+        // Upgrade options
+        for(const[ht,hd]of Object.entries(HD)){
+          if(hd.tier>HD[hs.type]?.tier){h+=`<button class="btn btn-y" onclick="send({t:'buyHouse',slot:${i},type:'${ht}'});setTimeout(renderTab,300)">Upgrade to ${hd.name} (${hd.price}g)</button> `}
+        }
+      } else if(!hs.owner){
+        h+=`<div class="sc"><div class="si"><h3>Slot ${i+1}: Empty</h3></div><span>`;
+        for(const[ht,hd]of Object.entries(HD)){h+=`<button class="btn btn-y" onclick="send({t:'buyHouse',slot:${i},type:'${ht}'});setTimeout(renderTab,300)">${hd.name} ${hd.price}g</button> `}
+        h+=`</span></div>`;
+      } else { h+=`<div class="sc"><div class="si"><h3>Slot ${i+1}: Owned</h3></div></div>`; }
+    }
+    h+=`</div>`;el.innerHTML=h;
+  } else if(panelTab==='market'){
+    let h=`<div class="tsec"><h3>Public Market</h3>`;
+    if(marketListings.length===0)h+='<p style="opacity:.4">No listings</p>';
+    for(const m of marketListings){
+      h+=`<div class="trow"><span>${m.item} x${m.qty} by ${m.seller} - ${m.price}g each</span>
+        <button class="btn btn-g" onclick="send({t:'marketBuy',id:${m.id}});setTimeout(()=>{send({t:'getMarket'})},200)">Buy ${m.qty*m.price}g</button></div>`}
+    h+=`</div><div class="tsec"><h3>List Item for Sale</h3>`;
+    const allItems={...(me?.cargo||{}), ...(me?.inv||{})};
+    for(const[item,qty]of Object.entries(allItems)){if(qty<=0)continue;
+      h+=`<div class="trow"><span>${item}: ${qty}</span>
+        <button class="btn btn-r" onclick="send({t:'marketList',item:'${item}',qty:Math.min(5,${qty}),price:100});setTimeout(()=>{send({t:'getMarket'})},200)">List 5 @100g</button></div>`}
+    h+=`</div>`;el.innerHTML=h;
+  }
 }
 
 // ═══ 3D BUILDERS ═══
@@ -209,62 +242,107 @@ function mkRowboat(){const g=new THREE.Group();g.add(M(new THREE.BoxGeometry(3.5
 function mkWarship(){const g=new THREE.Group();g.add(M(new THREE.BoxGeometry(10,3.5,20),0x5a3015,[0,1.8,0]));g.add(M(new THREE.BoxGeometry(9,.3,18),0xC4A060,[0,3.8,0]));g.add(M(new THREE.BoxGeometry(8,2.5,5),0x6B3E1A,[0,5,-7]));g.add(M(new THREE.ConeGeometry(5,6,4),0x5a3015,[0,1.8,13],[Math.PI/2,0,0]));for(const z of[-2,4]){g.add(M(new THREE.CylinderGeometry(.2,.25,14,6),0x543210,[0,11,z]));const s=M(new THREE.PlaneGeometry(6,8),0xe8dfc8,[0,13,z+.3]);s.material.side=2;s.material.transparent=true;s.material.opacity=.85;s.name=z===-2?'sail':'sail2';g.add(s)}for(const sd of[-1,1])for(let i=-1;i<=1;i++){const c=M(new THREE.CylinderGeometry(.2,.3,1.8,6),0x222222,[sd*5.2,3.8,i*4]);c.rotation.z=sd*Math.PI/2;g.add(c)}return g}
 function mkTrade(){const g=new THREE.Group();g.add(M(new THREE.BoxGeometry(6,2.5,14),0x6B4E12,[0,1.5,0]));for(const s of[-1,1])g.add(M(new THREE.BoxGeometry(.3,2,14.5),0x543210,[s*3.15,2.8,0]));g.add(M(new THREE.ConeGeometry(3.2,4,4),0x6B4E12,[0,1.5,9],[Math.PI/2,0,0]));g.add(M(new THREE.BoxGeometry(5.5,.2,13),0xC4A060,[0,3,0]));g.add(M(new THREE.BoxGeometry(4,2.5,4),0x7a5020,[0,4.5,-4.5]));g.add(M(new THREE.CylinderGeometry(.18,.22,12,6),0x543210,[0,9.5,1]));const s=M(new THREE.PlaneGeometry(7,9),0xe8dfc8,[0,11,2]);s.material.side=2;s.material.transparent=true;s.material.opacity=.85;s.name='sail';g.add(s);g.add(M(new THREE.CylinderGeometry(.3,.35,.4,6),0x333333,[0,3.3,5.5]));const b=M(new THREE.CylinderGeometry(.15,.2,2.2,6),0x1a1a1a,[0,3.5,6.8],[Math.PI/2,0,0]);b.name='barrel';g.add(b);return g}
 function mkChar(me){const g=new THREE.Group(),c=me?0x2e86c1:0xc0392b;g.add(M(new THREE.BoxGeometry(.9,1.5,.6),c,[0,2.3,0]));g.add(M(new THREE.SphereGeometry(.38,6,6),0xf0c090,[0,3.4,0]));g.add(M(new THREE.CylinderGeometry(.25,.45,.45,6),0x1a1a1a,[0,3.9,0]));for(const s of[-.22,.22]){const l=M(new THREE.BoxGeometry(.3,1,.35),0x4a3520,[s,.9,0]);l.name=s<0?'lL':'lR';g.add(l)}for(const s of[-.6,.6]){const a=M(new THREE.BoxGeometry(.25,1,.25),c,[s,2.3,0]);a.name=s<0?'aL':'aR';g.add(a)}return g}
-function mkTag(n,me){const c=document.createElement('canvas');c.width=256;c.height=36;const x=c.getContext('2d');x.fillStyle=me?'rgba(46,134,193,.6)':'rgba(0,0,0,.45)';x.beginPath();x.roundRect(4,2,248,32,4);x.fill();x.fillStyle='#fff';x.font='bold 17px sans-serif';x.textAlign='center';x.fillText(n,128,26);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));s.scale.set(9,2.2,1);return s}
-function buildIsland(d){const g=new THREE.Group();const isMine=MISL.some(m=>m.x===d.x&&m.z===d.z);const col=isMine?0x8a7a5a:0x4a8a3a;
-  g.add(M(new THREE.CylinderGeometry(d.r*.92,d.r,isMine?2:3.5,20),col,[0,isMine?1:1.8,0]));
-  g.add(M(new THREE.CylinderGeometry(d.r,d.r+(isMine?5:10),isMine?1:2,20),0xf0d9a0,[0,.5,0]));
-  if(!isMine){for(let i=0;i<2;i++){const r=d.r*(.15+Math.random()*.2),a=Math.random()*Math.PI*2,dd=Math.random()*d.r*.35;const h=M(new THREE.SphereGeometry(r,6,5),0x3d7a30,[Math.cos(a)*dd,r*.35+2.5,Math.sin(a)*dd]);h.scale.y=.45;g.add(h)}
-    for(let i=0;i<Math.floor(d.r/20);i++){const a=Math.random()*Math.PI*2,dd=5+Math.random()*(d.r-12);const p=mkPalm();p.position.set(Math.cos(a)*dd,2.5,Math.sin(a)*dd);p.scale.setScalar(.5+Math.random()*.3);g.add(p)}}
-  else{for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.random();g.add(M(new THREE.DodecahedronGeometry(2+Math.random()*2,0),d.ore==='gold'?0xd4a017:d.ore==='iron'?0x777777:0xcd7f32,[Math.cos(a)*d.r*.3,2.5,Math.sin(a)*d.r*.3]))}}
-  g.position.set(d.x,0,d.z);scene.add(g)}
+function mkTag(n,me){const c=document.createElement('canvas');c.width=256;c.height=36;const x=c.getContext('2d');x.fillStyle=me?'rgba(46,134,193,.6)':'rgba(0,0,0,.4)';x.beginPath();x.roundRect(4,2,248,32,4);x.fill();x.fillStyle='#fff';x.font='bold 16px sans-serif';x.textAlign='center';x.fillText(n,128,26);const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(c),transparent:true}));s.scale.set(9,2.2,1);return s}
+
+function buildIsland(d){
+  const g=new THREE.Group();const mine=d.ore;const safe=d.safe;
+  const col=mine?0x8a7a5a:safe?0x3aaa5a:0x4a8a3a;
+  g.add(M(new THREE.CylinderGeometry(d.r*.92,d.r,mine?2:safe?4:3.5,24),col,[0,mine?1:safe?2:1.8,0]));
+  g.add(M(new THREE.CylinderGeometry(d.r,d.r+(mine?5:10),mine?1:2,24),0xf0d9a0,[0,.5,0]));
+  if(!mine){for(let i=0;i<(safe?5:2);i++){const r=d.r*(.1+Math.random()*.2),a=Math.random()*Math.PI*2,dd=Math.random()*d.r*.4;const h=M(new THREE.SphereGeometry(r,6,5),0x3d7a30,[Math.cos(a)*dd,r*.35+2.5,Math.sin(a)*dd]);h.scale.y=.45;g.add(h)}
+    for(let i=0;i<Math.floor(d.r/18);i++){const a=Math.random()*Math.PI*2,dd=5+Math.random()*(d.r-12);const p=mkPalm();p.position.set(Math.cos(a)*dd,safe?3:2.5,Math.sin(a)*dd);p.scale.setScalar(.5+Math.random()*.3);g.add(p)}}
+  else{for(let i=0;i<3;i++){const a=(i/3)*Math.PI*2+Math.random();g.add(M(new THREE.DodecahedronGeometry(2+Math.random()*2,0),d.ore==='gold'?0xd4a017:d.ore==='iron'?0x777:0xcd7f32,[Math.cos(a)*d.r*.3,2.5,Math.sin(a)*d.r*.3]))}}
+  if(safe){// Safe zone ring
+    const ring=new THREE.Mesh(new THREE.RingGeometry(d.r+8,d.r+12,32),new THREE.MeshBasicMaterial({color:0x2ecc71,transparent:true,opacity:.15,side:2}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;g.add(ring)}
+  g.position.set(d.x,0,d.z);scene.add(g);
+}
 function mkPalm(){const g=new THREE.Group();g.add(M(new THREE.CylinderGeometry(.2,.35,5,5),0x8B6914,[0,2.5,0]));for(let i=0;i<4;i++){const a=(i/4)*Math.PI*2;g.add(M(new THREE.ConeGeometry(1.8,2.5,3),0x228B22,[Math.cos(a)*.8,5.5,Math.sin(a)*.8],[Math.sin(a)*.6,0,Math.cos(a)*.6]))}return g}
 function buildRocks(){for(const o of ROCKS){const m=M(new THREE.SphereGeometry(o.r,5,4),0x666655,[o.x,3+o.r*.4,o.z]);m.scale.y=.5;scene.add(m)}}
-let giMeshes={};
-function updateGI(items){const active=new Set();for(const gi of(items||[])){active.add(gi.id);if(!giMeshes[gi.id]){const col=gi.type==='gold'?0xffd700:gi.type==='iron'?0xaaaaaa:0xcd7f32;const m=new THREE.Mesh(new THREE.OctahedronGeometry(.8,0),new THREE.MeshPhongMaterial({color:col}));m.position.set(gi.x,3.5,gi.z);scene.add(m);giMeshes[gi.id]=m}giMeshes[gi.id].rotation.y=Date.now()*.002;giMeshes[gi.id].position.y=3.5+Math.sin(Date.now()*.003)*.3}for(const id in giMeshes)if(!active.has(+id)){scene.remove(giMeshes[id]);delete giMeshes[id]}}
-function updateBarrels(boat,cu){if(!boat.userData.barrels)boat.userData.barrels=[];const need=Math.min(10,Math.floor((cu||0)/50));while(boat.userData.barrels.length<need){const b=M(new THREE.CylinderGeometry(.5,.5,1,6),0x8B4513,[0,0,0]);boat.add(b);boat.userData.barrels.push(b)}while(boat.userData.barrels.length>need){boat.remove(boat.userData.barrels.pop())}boat.userData.barrels.forEach((b,i)=>{const row=Math.floor(i/3),col=i%3;b.position.set(-1.5+col*1.5,3.5,-1+row*1.5)})}
+
+let houseMeshes=[];
+function buildHouses(){
+  for(const hs of houseSlots){
+    const g=new THREE.Group();
+    // Just a marker post for now - will be replaced when owned
+    g.add(M(new THREE.CylinderGeometry(.3,.3,4,6),0x888888,[0,2,0]));
+    g.add(M(new THREE.BoxGeometry(1.5,.1,1.5),0x888888,[0,4,0]));
+    g.position.set(hs.x,3,hs.z);scene.add(g);houseMeshes.push(g);
+  }
+}
+
+// Cargo barrels visual
+function updateBarrels(boat,cu){
+  if(!boat.userData.br)boat.userData.br=[];
+  const need=Math.min(12,Math.floor((cu||0)/40));
+  while(boat.userData.br.length<need){const b=M(new THREE.CylinderGeometry(.45,.45,.9,6),0x8B4513);boat.add(b);boat.userData.br.push(b)}
+  while(boat.userData.br.length>need){boat.remove(boat.userData.br.pop())}
+  boat.userData.br.forEach((b,i)=>{const row=Math.floor(i/4),col=i%4;b.position.set(-1.2+col*0.9,3.3,-2+row*1.2)})
+}
+
+let giM={};
+function updateGI(items){const act=new Set();for(const gi of(items||[])){act.add(gi.id);if(!giM[gi.id]){const col=gi.type==='gold'?0xffd700:gi.type==='iron'?0xaaa:0xcd7f32;const m=new THREE.Mesh(new THREE.OctahedronGeometry(.7,0),new THREE.MeshPhongMaterial({color:col}));m.position.set(gi.x,3.5,gi.z);scene.add(m);giM[gi.id]=m}giM[gi.id].rotation.y=Date.now()*.002;giM[gi.id].position.y=3.5+Math.sin(Date.now()*.003)*.3}for(const id in giM)if(!act.has(+id)){scene.remove(giM[id]);delete giM[id]}}
 
 // ═══ ENTITIES ═══
-function getEnt(id){if(!ents[id]){const me=id===myId,ch=mkChar(me);scene.add(ch);const tg=mkTag('...',me);tg.position.y=5.5;ents[id]={boat:null,bt:null,char:ch,tag:tg,tn:'',to:null}}return ents[id]}
+function getEnt(id){if(!ents[id]){const me=id===myId,ch=mkChar(me);scene.add(ch);const tg=mkTag('...',me);tg.position.y=5;ents[id]={boat:null,bt:null,char:ch,tag:tg,tn:'',to:null}}return ents[id]}
 function ensBoat(e,t){if(e.bt===t)return;if(e.boat)scene.remove(e.boat);e.boat=t==='warship'?mkWarship():t==='tradeship'?mkTrade():mkRowboat();scene.add(e.boat);e.bt=t}
 function rmEnt(id){const e=ents[id];if(!e)return;if(e.boat)scene.remove(e.boat);scene.remove(e.char);if(e.tag.parent)e.tag.parent.remove(e.tag);delete ents[id]}
-const cbG=new THREE.SphereGeometry(.4,5,4),cbM=new THREE.MeshPhongMaterial({color:0x222222});
-function getCB(i){while(cbPool.length<=i){const m=new THREE.Mesh(cbG,cbM);m.visible=false;scene.add(m);cbPool.push(m)}return cbPool[i]}
+const cbG=new THREE.SphereGeometry(.4,5,4),cbMat=new THREE.MeshPhongMaterial({color:0x222});
+function getCB(i){while(cbPool.length<=i){const m=new THREE.Mesh(cbG,cbMat);m.visible=false;scene.add(m);cbPool.push(m)}return cbPool[i]}
 
 // ═══ MAIN LOOP ═══
 function animate(){
-  requestAnimationFrame(animate);
-  const t=clock.getElapsedTime();
-  const GS=getInterpolatedState();if(!GS)return;
-  if(ws?.readyState===1&&myId&&!mktOpen)send({t:'input',fwd:!!(keys['KeyW']||keys['ArrowUp']),back:!!(keys['KeyS']||keys['ArrowDown']),left:!!(keys['KeyA']||keys['ArrowLeft']),right:!!(keys['KeyD']||keys['ArrowRight']),act:!!keys['KeyE'],jump:!!keys['Space']});
+  requestAnimationFrame(animate);const t=clock.getElapsedTime();
+  const GS=getIS();if(!GS)return;
+  if(ws?.readyState===1&&myId&&!panelOpen)send({t:'input',fwd:!!(keys['KeyW']||keys['ArrowUp']),back:!!(keys['KeyS']||keys['ArrowDown']),left:!!(keys['KeyA']||keys['ArrowLeft']),right:!!(keys['KeyD']||keys['ArrowRight']),act:!!keys['KeyE'],jump:!!keys['Space']});
   if(!freeLook){mv.x=(mX/innerWidth)*2-1;mv.y=-(mY/innerHeight)*2+1;ray.setFromCamera(mv,camera);const h=new THREE.Vector3();if(ray.ray.intersectPlane(wP,h)){mW.x=h.x;mW.z=h.z;send({t:'aim',x:h.x,z:h.z})}}
+  // Water
   const wp=water.geometry.attributes.position;for(let i=0;i<wp.count;i++){const x=wp.getX(i),y=wp.getY(i);wp.setZ(i,Math.sin(x*.015+t*1.1)*.5+Math.sin(y*.02+t*.9)*.4+Math.sin((x+y)*.01+t*.5)*.6)}wp.needsUpdate=true;water.geometry.computeVertexNormals();
-  const active=new Set();
-  for(const id in GS.p){active.add(id);const p=GS.p[id],e=getEnt(id),me=id===myId;ensBoat(e,p.sh);
-    e.boat.position.set(p.bx,Math.sin(t*1.8+p.bx*.07)*.3+.3,p.bz);e.boat.rotation.y=p.br;e.boat.rotation.z=-(p.bs||0)*.15;e.boat.rotation.x=Math.sin(t*1.3)*.015;
-    const sl=e.boat.getObjectByName('sail');if(sl){sl.scale.y+=(([.05,.5,1][p.sl||1])-sl.scale.y)*.15}
-    const s2=e.boat.getObjectByName('sail2');if(s2){s2.scale.y+=(([.05,.4,.9][p.sl||1])-s2.scale.y)*.15}
+  // Entities
+  const act=new Set();
+  for(const id in GS.p){act.add(id);const p=GS.p[id],e=getEnt(id),me=id===myId;ensBoat(e,p.sh);
+    // Sinking
+    const sinkY=p.sk>0?-p.sk*8:0;
+    e.boat.position.set(p.bx,Math.sin(t*1.8+p.bx*.07)*.3+.3+sinkY,p.bz);
+    e.boat.rotation.y=p.br;e.boat.rotation.z=-(p.bs||0)*.15+(p.sk>0?p.sk*.5:0);e.boat.rotation.x=Math.sin(t*1.3)*.015+(p.sk>0?p.sk*.3:0);
+    // Sail damage based on HP
+    const hpRatio=Math.max(0,p.hp)/(p.mhp||100);
+    const sl=e.boat.getObjectByName('sail');if(sl){const ts=[.05,.5,1][p.sl||1]*Math.max(.1,hpRatio);sl.scale.y+=(ts-sl.scale.y)*.15}
+    const s2=e.boat.getObjectByName('sail2');if(s2){const ts=[.05,.4,.9][p.sl||1]*Math.max(.1,hpRatio);s2.scale.y+=(ts-s2.scale.y)*.15}
     if(me&&p.ob){const br=e.boat.getObjectByName('barrel');if(br){const d=Math.hypot(mW.x-p.bx,mW.z-p.bz);br.rotation.x=Math.PI/2-Math.min(.5,d*.003)}}
     if(p.sh==='tradeship')updateBarrels(e.boat,p.cu);
-    if(p.ob){e.char.position.set(p.bx+(SDEFS[p.sh]?.cannons==='front'?Math.sin(p.br)*2:-Math.sin(p.br)*5),e.boat.position.y+1.5,p.bz+(SDEFS[p.sh]?.cannons==='front'?Math.cos(p.br)*2:-Math.cos(p.br)*5));
-      e.char.rotation.y=me?Math.atan2(mW.x-e.char.position.x,mW.z-e.char.position.z):p.br}
-    else{e.char.position.set(p.cx,p.cy,p.cz);e.char.rotation.y=p.cr;if(p.mn){e.char.rotation.x=Math.sin(t*6)*.3}else{e.char.rotation.x=0;const sw=Math.sin(t*8)*.35;['lL','lR','aL','aR'].forEach(n=>{const m=e.char.getObjectByName(n);if(m)m.rotation.x=n.includes('L')?sw:-sw})}}
+    // Character
+    if(p.ob||p.bo){
+      let bx=p.bx,bz=p.bz,brot=p.br;
+      if(p.bo&&GS.p[p.bo]){bx=GS.p[p.bo].bx;bz=GS.p[p.bo].bz;brot=GS.p[p.bo].br}
+      const sd=SD[p.sh]||{};const fwd=sd.cannons==='front'?2:-5;
+      e.char.position.set(p.bo?p.cx:bx+Math.sin(brot)*fwd,e.boat.position.y+1.5+(p.bo?1:0),p.bo?p.cz:bz+Math.cos(brot)*fwd);
+      e.char.rotation.y=me?Math.atan2(mW.x-e.char.position.x,mW.z-e.char.position.z):brot;
+    } else {
+      e.char.position.set(p.cx,p.cy,p.cz);e.char.rotation.y=p.cr;
+      if(p.mn){e.char.rotation.x=Math.sin(t*6)*.3}else{e.char.rotation.x=0;const sw=Math.sin(t*8)*.35;
+        ['lL','lR','aL','aR'].forEach(n=>{const m=e.char.getObjectByName(n);if(m)m.rotation.x=n.includes('L')?sw:-sw})}
+    }
     if(e.tn!==p.n){if(e.tag.parent)e.tag.parent.remove(e.tag);e.tag=mkTag(p.n,me);e.tag.position.y=p.ob?(p.sh==='warship'?20:8):5;e.tn=p.n}
-    const att=p.ob?'b':'c';if(e.to!==att){if(e.tag.parent)e.tag.parent.remove(e.tag);(p.ob?e.boat:e.char).add(e.tag);e.tag.position.y=p.ob?(p.sh==='warship'?20:8):5;e.to=att}}
-  for(const id in ents)if(!active.has(id))rmEnt(id);
+    const att=p.ob?'b':'c';if(e.to!==att){if(e.tag.parent)e.tag.parent.remove(e.tag);(p.ob?e.boat:e.char).add(e.tag);e.tag.position.y=p.ob?(p.sh==='warship'?20:8):5;e.to=att}
+  }
+  for(const id in ents)if(!act.has(id))rmEnt(id);
+  // Aim
   const me=GS.p[myId];
   if(me?.ob){aimRing.visible=true;aimRing.position.x=mW.x;aimRing.position.z=mW.z;
-    if(SDEFS[me.sh]?.cannons==='side'){for(let i=0;i<3;i++){dots[i].visible=true;const sp=(i-1)*7;dots[i].position.x=mW.x+Math.sin(me.br)*sp;dots[i].position.z=mW.z+Math.cos(me.br)*sp}}else dots.forEach(d=>d.visible=false)}
+    if(SD[me.sh]?.cannons==='side'){for(let i=0;i<3;i++){dots[i].visible=true;const sp=(i-1)*7;dots[i].position.x=mW.x+Math.sin(me.br)*sp;dots[i].position.z=mW.z+Math.cos(me.br)*sp}}else dots.forEach(d=>d.visible=false)}
   else{aimRing.visible=false;dots.forEach(d=>d.visible=false)}
   const cba=GS.cb||[];for(let i=0;i<cba.length;i++){const m=getCB(i);m.visible=true;m.position.set(cba[i].x,cba[i].y,cba[i].z)}for(let i=cba.length;i<cbPool.length;i++)cbPool[i].visible=false;
   updateGI(GS.gi);
+  // Update house meshes based on state
+  if(GS.hs)for(let i=0;i<GS.hs.length&&i<houseSlots.length;i++){houseSlots[i].owner=GS.hs[i].owner;houseSlots[i].type=GS.hs[i].type}
+  // Camera
   if(me&&ents[myId]){const e=ents[myId];let tgt,rot,cd,ch;
     if(me.ob){tgt=e.boat.position;rot=e.boat.rotation.y;cd=42;ch=22}else{tgt=e.char.position;rot=e.char.rotation.y;cd=20;ch=12}
-    let camRot=rot,camPitch=0;if(freeLook){camRot=rot+flYaw;camPitch=flPitch}
-    const tx=tgt.x-Math.sin(camRot)*cd,tz=tgt.z-Math.cos(camRot)*cd,ty=tgt.y+ch+camPitch*20;
-    camera.position.x+=(tx-camera.position.x)*.08;camera.position.z+=(tz-camera.position.z)*.08;camera.position.y+=(ty-camera.position.y)*.08;
-    camera.lookAt(tgt.x,tgt.y+3+camPitch*10,tgt.z)}
+    let cR=rot,cP=0;if(freeLook){cR=rot+flY;cP=flP}
+    camera.position.x+=(tgt.x-Math.sin(cR)*cd-camera.position.x)*.08;camera.position.z+=(tgt.z-Math.cos(cR)*cd-camera.position.z)*.08;
+    camera.position.y+=(tgt.y+ch+cP*20-camera.position.y)*.08;camera.lookAt(tgt.x,tgt.y+3+cP*10,tgt.z)}
   updateHUD(GS);drawMM(GS);
-  document.getElementById('cross').style.left=(mX-8)+'px';document.getElementById('cross').style.top=(mY-8)+'px';
+  document.getElementById('cross').style.left=(mX-7)+'px';document.getElementById('cross').style.top=(mY-7)+'px';
   renderer.render(scene,camera);
 }
 
@@ -274,24 +352,36 @@ function updateHUD(GS){
   document.getElementById('hp-b').style.width=(Math.max(0,me.hp)/(me.mhp||100)*100)+'%';
   document.getElementById('hp-t').textContent=`${Math.max(0,me.hp)}/${me.mhp||100}`;
   document.getElementById('sail').style.display=me.ob?'block':'none';document.getElementById('sail').textContent=['Stop','Half','Full'][me.sl||1];
-  document.getElementById('lbl').textContent=me.ob?(SDEFS[me.sh]?.name||'Boat'):me.sw?'Swimming!':me.mn?'Mining...':'Land [B]Shop [F]Mine';
-  const ap=document.getElementById('prompt');nearIslandIdx=-1;
-  if(me.ob){let nr=false;for(const i of ALL_ISL)if(Math.hypot(me.bx-i.x,me.bz-i.z)<i.r+14){nr=true;break}ap.style.display=nr?'block':'none';ap.textContent='E: Disembark'}
-  else if(!me.sw){if(Math.hypot(me.cx-me.bx,me.cz-me.bz)<18){ap.style.display='block';ap.textContent='E: Board'}else{ap.style.display='none';for(let i=0;i<ISL.length;i++)if(Math.hypot(me.cx-ISL[i].x,me.cz-ISL[i].z)<ISL[i].r){nearIslandIdx=i;break}}}
+  // Safe zone indicator
+  const inSafe=SAFE&&Math.hypot((me.ob?me.bx:me.cx)-SAFE.x,(me.ob?me.bz:me.cz)-SAFE.z)<SAFE.r+20;
+  document.getElementById('safezone-ind').style.display=inSafe?'block':'none';
+  const lbl=me.ob?(SD[me.sh]?.name||'Boat'):me.sw?'Swimming!':me.mn?'Mining...':'Land [B]Menu [F]Mine [G]Deposit';
+  document.getElementById('lbl').textContent=lbl;
+  const ap=document.getElementById('prompt');nearIslIdx=-1;
+  if(me.ob){let nr=false;for(const i of ALL)if(Math.hypot(me.bx-i.x,me.bz-i.z)<i.r+14){nr=true;break}ap.style.display=nr?'block':'none';ap.textContent='E: Disembark'}
+  else if(!me.sw){
+    if(Math.hypot(me.cx-me.bx,me.cz-me.bz)<18){ap.style.display='block';ap.textContent='E: Board'}
+    else{ap.style.display='none';
+      // Check near trade islands
+      if(SAFE&&Math.hypot(me.cx-SAFE.x,me.cz-SAFE.z)<SAFE.r){nearIslIdx=-1} // -1=safe island trades  
+      for(let i=0;i<ISL.length;i++)if(Math.hypot(me.cx-ISL[i].x,me.cz-ISL[i].z)<ISL[i].r){nearIslIdx=i;break}}}
   else ap.style.display='none';
   document.getElementById('pc').textContent=`${Object.keys(GS.p).length} online`;
-  const sorted=Object.entries(GS.p).sort((a,b)=>b[1].sc-a[1].sc).slice(0,6);
+  const sorted=Object.entries(GS.p).sort((a,b)=>b[1].sc-a[1].sc).slice(0,5);
   document.getElementById('slist').innerHTML=sorted.map(([id,p])=>`<div class="sr${id===myId?' me':''}"><span>${p.n}</span><span>${p.sc}·${p.g}g</span></div>`).join('');
-  const inv=me.inv||{};document.getElementById('inv-list').innerHTML=Object.entries(inv).filter(([,v])=>v>0).map(([k,v])=>`<div>${(ODEFS[k]?.icon||'')} ${k}:${v}</div>`).join('')||'<div style="opacity:.4">Empty</div>';
-  const cap=SDEFS[me.sh]?.cargo||0;if(cap>0){document.getElementById('cargo').style.display='block';
-    document.getElementById('cargo-list').innerHTML=`<div style="opacity:.5">${me.cu||0}/${cap}</div>`+Object.entries(me.cargo||{}).filter(([,v])=>v>0).map(([k,v])=>`<div>${(GDEFS[k]?.icon||'')} ${k}:${v}</div>`).join('')}
+  const inv=me.inv||{};document.getElementById('inv-list').innerHTML=Object.entries(inv).filter(([,v])=>v>0).map(([k,v])=>`<div>${(OD[k]?.icon||'')}${k}:${v}</div>`).join('')||'<span style="opacity:.3">Empty</span>';
+  const cap=SD[me.sh]?.cargo||0;if(cap>0){document.getElementById('cargo').style.display='block';
+    document.getElementById('cargo-list').innerHTML=`<div style="opacity:.4">${me.cu||0}/${cap}</div>`+Object.entries(me.cargo||{}).filter(([,v])=>v>0).map(([k,v])=>`<div>${(GD[k]?.icon||OD[k]?.icon||'')}${k}:${v}</div>`).join('')}
   else document.getElementById('cargo').style.display='none';
 }
 function drawMM(GS){
-  const c=mmX,w=180,h=180,s=w/MAP;c.clearRect(0,0,w,h);c.fillStyle='rgba(8,35,60,.85)';c.fillRect(0,0,w,h);
+  const c=mmX,w=170,h=170,s=w/MAP;c.clearRect(0,0,w,h);c.fillStyle='rgba(8,35,60,.85)';c.fillRect(0,0,w,h);
+  if(SAFE){c.fillStyle='rgba(46,204,113,.3)';c.beginPath();c.arc(w/2+SAFE.x*s,h/2+SAFE.z*s,Math.max(6,SAFE.r*s),0,Math.PI*2);c.fill()}
   c.fillStyle='#4a8a3a';for(const i of ISL){c.beginPath();c.arc(w/2+i.x*s,h/2+i.z*s,Math.max(4,i.r*s),0,Math.PI*2);c.fill()}
   c.fillStyle='#8a7a5a';for(const i of MISL){c.beginPath();c.arc(w/2+i.x*s,h/2+i.z*s,Math.max(2,i.r*s),0,Math.PI*2);c.fill()}
-  c.fillStyle='rgba(255,255,255,.25)';c.font='6px sans-serif';c.textAlign='center';for(const i of ALL_ISL)c.fillText(i.name||'',w/2+i.x*s,h/2+i.z*s+i.r*s+7);
-  for(const id in GS.p){const p=GS.p[id],me=id===myId,px=w/2+p.bx*s,py=h/2+p.bz*s;c.fillStyle=me?'#2ecc71':'#e74c3c';c.beginPath();c.arc(px,py,me?3:2,0,Math.PI*2);c.fill()}
+  c.fillStyle='rgba(255,255,255,.2)';c.font='5px sans-serif';c.textAlign='center';
+  for(const i of ALL)c.fillText(i.name||'',w/2+i.x*s,h/2+i.z*s+i.r*s+6);
+  for(const id in GS.p){const p=GS.p[id],me=id===myId;c.fillStyle=me?'#2ecc71':'#e74c3c';c.beginPath();c.arc(w/2+p.bx*s,h/2+p.bz*s,me?3:2,0,Math.PI*2);c.fill()}
 }
-</script></body></html>
+</script>
+</body></html>
